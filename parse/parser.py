@@ -1,18 +1,26 @@
+from __future__ import annotations
+from typing import List
+
 from wiktionaryparser import WiktionaryParser
 
 
-class Parser:
-    def __init__(self, word: str, language: str):
-        parser = WiktionaryParser()
-        self.word_info = parser.fetch(word)
+def parse(word: str, language: str) -> List[Word]:
+    parser = WiktionaryParser()
+    word_info = parser.fetch(word, language)
+    word_origins: List[Word] = []
+
+    for origin in word_info:
+        pass
+    return word_origins
 
 
-class OriginTree:
-    class Node:
-        def __init__(self, language: str, word: str, etymons: List[Node]):
-            self.language: str = language
-            self.word: str = word
-            self.etymons: List[Node] = etymons
+class Word:
+    def __init__(self, word: str, language: str, meanings: Meaning):
+        self.word: str = word
+        self.language: str = language
+        self.etymons: List[Word] = []
 
-    def __init__(self, root: Node):
-        self.root: Node = root
+
+class Meaning:
+    def __init__(self):
+        pass
