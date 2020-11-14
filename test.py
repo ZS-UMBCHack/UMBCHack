@@ -7,8 +7,12 @@ red = (255, 0, 0)
 black = (0, 0, 0)
 white = (255, 255, 255)
 
+NA = 0
+
 SWIDTH = 1000
 SHEIGHT = 500
+
+LINEWIDTH = 3
 
 spacing = 25
 
@@ -49,6 +53,11 @@ def main():
         
         x += b_space
         orgerman = draw_col_box_text(screen, x, y, "German", font)
+        
+        x = cx
+        y += spacing + max(obj_space(orlatin), obj_space(orgermanic), obj_space(orgerman))
+        length = 2*b_space
+        branch_line_1 = draw_col_box(screen, x, y, length, LINEWIDTH)
 
         pygame.display.flip()
 
@@ -58,7 +67,10 @@ def branch_space(branches):
     return SWIDTH/(branches + 1)
 
 def obj_space(obj):
-    return obj[2]/2
+    return obj[1]/2
+
+def obj_hspace(obj):
+    return obj[0]/2
     
 def draw_text(surface, x, y, text, font, color=white):
     T = def_text(text, font, color)
@@ -67,7 +79,7 @@ def draw_text(surface, x, y, text, font, color=white):
     twidth = T.get_width()
     theight = T.get_height()
     
-    return T, twidth, theight
+    return twidth, theight, T
 
 def draw_ctext(surface, cx, cy, text, font, color=white):
     T = def_text(text, font, color)
@@ -77,7 +89,7 @@ def draw_ctext(surface, cx, cy, text, font, color=white):
     
     render_text(surface, T, cx, cy)
     
-    return T, twidth, theight
+    return twidth, theight, T
 
 def draw_col_text(surface, cx, y, text, font, color=white):
     T = def_text(text, font, color)
@@ -90,7 +102,7 @@ def draw_col_text(surface, cx, y, text, font, color=white):
     
     render_text(surface, T, cx, cy)
     
-    return T, twidth, theight
+    return twidth, theight, T
 
 def draw_box_text(surface, x, y, text, font, border=0.5, bcolor=white, tcolor=black):
     """
@@ -108,7 +120,7 @@ def draw_box_text(surface, x, y, text, font, border=0.5, bcolor=white, tcolor=bl
     
     render_text(surface, T, cx, cy)
     
-    return B, T, bwidth, bheight
+    return bwidth, bheight, T, B
  
 def draw_cbox_text(surface, cx, cy, text, font, border=0.5, bcolor=white, tcolor=black):
     """
@@ -128,7 +140,7 @@ def draw_cbox_text(surface, cx, cy, text, font, border=0.5, bcolor=white, tcolor
     
     render_text(surface, T, cx, cy)
     
-    return B, T, bwidth, bheight
+    return bwidth, bheight, T, B
  
 def draw_col_box_text(surface, cx, y, text, font, border=0.5, bcolor=white, tcolor=black):
     """
@@ -150,7 +162,32 @@ def draw_col_box_text(surface, cx, y, text, font, border=0.5, bcolor=white, tcol
     
     render_text(surface, T, cx, cy)
     
-    return B, T, bwidth, bheight
+    return bwidth, bheight, T, B
+
+def draw_box(surface, x, y, width, height, color=white):
+    B = pygame.Rect(x, y, width, height)
+    round_rect(surface, B, color)
+    
+    return width, height, NA, B
+ 
+def draw_cbox(surface, cx, cy, width, height, color=white):
+    bx, by = get_corner(cx, cy, width, height)
+    
+    B = pygame.Rect(bx, by, width, height)
+    round_rect(surface, B, color)
+    
+    return width, height, NA, B
+ 
+def draw_col_box(surface, cx, y, width, height, color=white):
+    NA = 0
+    
+    bx, NA = get_corner(cx, NA, width, NA)
+    NA, cy = get_center(NA, y, NA, height)
+    
+    B = pygame.Rect(bx, y, width, height)
+    round_rect(surface, B, color)
+    
+    return width, height, NA, B
 
 def get_corner(cx, cy, width, height):
     return (cx - width // 2, cy - height // 2)
