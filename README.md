@@ -1,2 +1,2 @@
-# HackUMBC
+# UMBCHack
 Accessible Etymology
