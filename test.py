@@ -33,7 +33,6 @@ def main():
     y += 2 * spacing + inword.get_height()
     origin_tree = Text('Origin Tree:', font, center_x=cx, y=y)
 
-    # old
     y += spacing + origin_tree.rect.height
     b_space = branch_space(3)
     x = b_space
@@ -80,20 +79,7 @@ class Box:
             pass_args = kwargs
         else:
             pass_args.update(kwargs)
-
-        self.rect = pygame.Rect(0, 0, 0, 0)
-        if 'x' in pass_args.keys():
-            self.rect.x = pass_args['x']
-        if 'y' in pass_args.keys():
-            self.rect.y = pass_args['y']
-        if 'width' in pass_args.keys():
-            self.rect.width = pass_args['width']
-        if 'height' in pass_args.keys():
-            self.rect.height = pass_args['height']
-        if 'center_x' in pass_args.keys():
-            self.rect.x = pass_args['center_x'] - self.rect.width / 2
-        if 'center_y' in pass_args.keys():
-            self.rect.y = pass_args['center_y'] - self.rect.height / 2
+        self.rect = create_rect(pass_args)
 
     def render(self, screen: pygame.Surface, view_pos):
         round_rect(screen, self.rect.move(view_pos), self._color)
@@ -135,6 +121,23 @@ class Text:
 
     def render(self, screen: pygame.Surface, view_pos):
         screen.blit(self._surface, self.rect.topleft + view_pos)
+
+
+def create_rect(pass_args):
+    rect = pygame.Rect(0, 0, 0, 0)
+    if 'x' in pass_args.keys():
+        rect.x = pass_args['x']
+    if 'y' in pass_args.keys():
+        rect.y = pass_args['y']
+    if 'width' in pass_args.keys():
+        rect.width = pass_args['width']
+    if 'height' in pass_args.keys():
+        rect.height = pass_args['height']
+    if 'center_x' in pass_args.keys():
+        rect.x = pass_args['center_x'] - rect.width / 2
+    if 'center_y' in pass_args.keys():
+        rect.y = pass_args['center_y'] - rect.height / 2
+    return rect
 
 
 def branch_space(branches):
