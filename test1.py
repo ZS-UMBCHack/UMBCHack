@@ -14,7 +14,7 @@ SHEIGHT = 500
 
 LINEWIDTH = 3
 
-spacing = 25
+ROWSPACING = 25
 
 cx = SWIDTH/2
 cy = SHEIGHT/2
@@ -34,18 +34,19 @@ def main():
         screen.fill(black)
         
         # Draw some words!
+        """
         button = draw_col_box_text(screen, SWIDTH - 40, 20, "X", font)
 
-        y = spacing
+        y = ROWSPACING
         word = draw_col_text(screen, cx, y, "Word:", font)
         
-        y += spacing + obj_space(word)
+        y += ROWSPACING + obj_space(word)
         inword = draw_col_box_text(screen, cx, y, "Word", font)
         
-        y += 2*spacing + obj_space(inword)
+        y += 2*ROWSPACING + obj_space(inword)
         origint = draw_col_text(screen, cx, y, "Origin Tree:", font)
         
-        y += spacing + obj_space(origint)
+        y += ROWSPACING + obj_space(origint)
         b_space = branch_space(3)
         x = b_space
         orlatin = draw_col_box_text(screen, x, y, "Latin", font)
@@ -57,21 +58,51 @@ def main():
         orgerman = draw_col_box_text(screen, x, y, "German", font)
         
         x = cx
-        y += 1.25*spacing + max(obj_space(orlatin), obj_space(orgermanic), obj_space(orgerman))
+        y += 1.25*ROWSPACING + max(obj_space(orlatin), obj_space(orgermanic), obj_space(orgerman))
         length = 2*b_space
         branch_line_1 = draw_col_box(screen, x, y, length, LINEWIDTH)
+        """
+        
+        branches(screen, [[{"Language": "Latin", "Word": "sonus"}, {"Language": "", "Word": ""}]], 20)
 
         pygame.display.flip()
 
         running = check_for_quit(button)
         
-def branches(branch_matrix):
+def branches(surface, tree, starting_y):
+    font = pygame.font.Font("OpenDyslexic3-Regular.ttf", 20)
     """
-    The branch matrix should be of the form ((("Latin", "sonus"), ("","")), (("Anglo-Norman French", "soun/suner"), ("", "")), (("Middle English", "soun"),("English", "-d")), (("", "sound"), ("", "sound")))  with
-    "" representing empty space. Location of empty and non-empty space indicate the tree branches.
-    Ex: (("German"))
+    The tree should be of the form [[{"Language": "Latin", "Word": "sonus"}, {"Language": "", "Word": ""}],
+    [{"Language": "Anglo-Norman French", "Word": "soun/suner"}, {"Language": "", "Word": ""}],
+    [{"Language": "Middle English", "Word": "soun"},{"English", "Word": "-d"}],
+    [{"Language": "", "Word": "sound"}, {"Language": "", "Word": "sound"}]]  with
+    "" representing empty space. Location of empty and non-empty space and the same dictionary indicate
+    the tree branches. The list goes from top to bottom. The last word should not have language written down.
     """
-
+    columns = len(tree[0])
+    col_spacing = SWIDTH/columns
+    x_col = 0
+    y_lang = starting_y
+    y_cline = y_lang + ROWSPACING
+    row = 0
+    for row in tree:
+        for col in row:
+            x_col += col_spacing
+            
+            lang = draw_col_text(surface, x_col, y_lang, col["Language"], font)
+            y_word = y_cline + ROWSPACING + obj_space(lang)
+            word = draw_col_text(surface, x_col, y_word, col["Language"], font)
+            
+            len_cline = word[2].rect.cy() - lang[2].rect.cy() - obj_space(lang)/2 - obj_space(word)/2 + 4
+            
+            cline = draw_box(surface, x_col, y_cline, LINEWIDTH, len_cline)
+            
+            render_text(surface, lang, lang[2].rect.cx(), lang[2].rect.cy())
+            render_text(surface, word, word[2].rect.cx(), word[2].rect.cy())
+            
+        y_lang += 2*ROWSPACING
+            
+    
 def branch_space(branches):
     return SWIDTH/(branches + 1)
 
@@ -84,7 +115,6 @@ def obj_hspace(obj):
 def draw_text(surface, x, y, text, font, color=white):
     T = def_text(text, font, color)
     cx, cy = get_center(x, y, T.get_width(), T.get_height())
-    render_text(surface, T, cx, cy)
     twidth = T.get_width()
     theight = T.get_height()
     
@@ -95,8 +125,6 @@ def draw_ctext(surface, cx, cy, text, font, color=white):
     twidth = T.get_width()
     theight = T.get_height()
     
-    render_text(surface, T, cx, cy)
-    
     return twidth, theight, T
 
 def draw_col_text(surface, cx, y, text, font, color=white):
@@ -106,8 +134,6 @@ def draw_col_text(surface, cx, y, text, font, color=white):
     NA = 0
 
     NA, cy = get_center(NA, y, NA, T.get_height())
-    
-    render_text(surface, T, cx, cy)
     
     return twidth, theight, T
 
@@ -123,8 +149,6 @@ def draw_box_text(surface, x, y, text, font, border=0.5, bcolor=white, tcolor=bl
     
     B = pygame.Rect(x, y, bwidth, bheight)
     round_rect(surface, B, bcolor)
-    
-    render_text(surface, T, cx, cy)
     
     return bwidth, bheight, T, B
  
@@ -142,8 +166,6 @@ def draw_cbox_text(surface, cx, cy, text, font, border=0.5, bcolor=white, tcolor
     
     B = pygame.Rect.center(bx, by, bwidth, bheight)
     round_rect(surface, B, bcolor)
-    
-    render_text(surface, T, cx, cy)
     
     return bwidth, bheight, T, B
  
@@ -163,8 +185,6 @@ def draw_col_box_text(surface, cx, by, text, font, border=0.5, bcolor=white, tco
     
     B = pygame.Rect(bx, by, bwidth, bheight)
     round_rect(surface, B, bcolor)
-    
-    render_text(surface, T, cx, cy)
     
     return bwidth, bheight, T, B
 
@@ -203,8 +223,8 @@ def move_button(button, text, dx=1, dy=0):
     return button.move(dx, dy)
     #text = text.move(dx, dy)
 
-def render_text(surface, text, cx, cy):
-    return surface.blit(text, (cx - text.get_width() // 2, cy - text.get_height() // 1.7))
+def render_text(surface, text_obj, cx, cy):
+    return surface.blit(text_obj, (cx - text_obj.get_width() // 2, cy - text_obj.get_height() // 1.7))
 
 def def_text(text, font, color):
     return font.render(text, True, color)
