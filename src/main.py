@@ -21,7 +21,7 @@ def main():
     pygame.init()
     running = True
 
-    font = pygame.font.Font("OpenDyslexic3-Regular.ttf", 15)
+    font = pygame.font.Font("assets/OpenDyslexic3-Regular.ttf", 15)
 
     view_pos = 0, 0
     y = ROWSPACING
@@ -47,12 +47,12 @@ def main():
 
     x = cx
     y += ROWSPACING + max(orlatin.get_height(), orgermanic.get_height(), orgerman.get_height())
-    length = 2*b_space
+    length = 2 * b_space
     branch_line_1 = Box(center_x=x, y=y, width=length, height=LINEWIDTH)
-    
+
     obj = tree([[{"Language": "Latin", "Word": "sonus"}, {"Language": "", "Word": ""}],
                 [{"Language": "Anglo-Norman French", "Word": "soun/suner"}, {"Language": "", "Word": ""}],
-                [{"Language": "Middle English", "Word": "soun"},{"Language": "English", "Word": "-d"}],
+                [{"Language": "Middle English", "Word": "soun"}, {"Language": "English", "Word": "-d"}],
                 [{"Language": "", "Word": "sound"}, {"Language": "", "Word": "sound"}]], 20, font)
 
     while running:
@@ -102,10 +102,10 @@ class BoxText:
         self.text: Text = Text(text, font, tcolor, x=0, y=0)
 
         kwargs['width'] = self.text.rect.width + border * 2
-        kwargs['height'] = self.text.rect.height + border *.5
+        kwargs['height'] = self.text.rect.height + border * .5
         self.box = Box(bcolor, kwargs)
 
-        self.text.rect.center = self.box.rect.move(0, -self.text.rect.height*.07).center
+        self.text.rect.center = self.box.rect.move(0, -self.text.rect.height * .07).center
 
     def get_height(self) -> int:
         return self.box.rect.height
@@ -131,7 +131,8 @@ class Text:
 
     def render(self, screen: pygame.Surface, view_pos):
         screen.blit(self._surface, self.rect.topleft + view_pos)
-        
+
+
 def tree(tree, starting_y, font):
     """
     The tree should be of the form [[{"Language": "Latin", "Word": "sonus"}, {"Language": "", "Word": ""}],
@@ -144,60 +145,61 @@ def tree(tree, starting_y, font):
     # [[language y], [word y]]
     columns = len(tree[0])
     print(columns)
-    col_spacing = SWIDTH/(columns + 1)
+    col_spacing = SWIDTH / (columns + 1)
     y_tot = y_lang = starting_y
     row = 0
     obj = []
     overlap = 2
     for row in tree:
         x_col = 0
-        y_vals = [[0],[0],[0]]
-        heights = [[0],[0],[0]]
+        y_vals = [[0], [0], [0]]
+        heights = [[0], [0], [0]]
         for col in row:
             y_lang = y_word = y_tot
-            
+
             if col["Language"] != "":
                 lang = BoxText(col["Language"], font, center_x=x_col, y=y_lang)
-                
+
                 y_cline = y_lang + lang.get_height() - overlap
                 y_word = y_cline + ROWSPACING
-                
+
                 y_vals[0].append(y_lang)
                 heights.append(lang.box.rect.height)
-            
+
             if col["Word"] != "":
                 word = BoxText(col["Word"], font, center_x=x_col, y=y_word)
-                
+
                 y_vals[1].append(y_word)
                 heights.append(word.box.rect.height)
-                
+
             if col["Language"] != "" and col["Word"] != "":
-                len_cline = word.box.rect.centery - lang.box.rect.centery - lang.box.rect.height + overlap*2
+                len_cline = word.box.rect.centery - lang.box.rect.centery - lang.box.rect.height + overlap * 2
                 cline = Box(center_x=x_col, y=y_cline, width=LINEWIDTH, height=len_cline)
-                
+
                 y_vals[2].append(y_cline)
                 heights.append(cline.rect.height)
-                
+
         y_lang = max(y_vals[0])
         y_word = max(y_vals[1])
         y_cline = max(y_vals[2])
-        y_tot += max(heights[0]) + max(heights[1]) + max(heights[2]) + 2*ROWSPACING
-                
+        y_tot += max(heights[0]) + max(heights[1]) + max(heights[2]) + 2 * ROWSPACING
+
         for col in row:
             x_col += col_spacing
             if col["Language"] != "":
                 lang = BoxText(col["Language"], font, center_x=x_col, y=y_lang)
                 obj.append(lang)
-            
+
             if col["Word"] != "":
                 word = BoxText(col["Word"], font, center_x=x_col, y=y_word)
                 obj.append(word)
-                
+
             if col["Language"] != "" and col["Word"] != "":
                 cline = Box(center_x=x_col, y=y_cline, width=LINEWIDTH, height=len_cline)
                 obj.append(cline)
-            
+
     return obj
+
 
 def create_rect(pass_args):
     rect = pygame.Rect(0, 0, 0, 0)
@@ -218,6 +220,7 @@ def create_rect(pass_args):
 
 def branch_space(branches):
     return SWIDTH / (branches + 1)
+
 
 def check_for_quit():
     boolean = True
