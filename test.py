@@ -41,11 +41,14 @@ def main():
         
         y += spacing + obj_space(origint)
         number_of_branches = 3
-        x = SWIDTH/number_of_branches
+        x = SWIDTH/(number_of_branches + 1)
         orlatin = draw_col_box_text(screen, x, y, "Latin", font)
         
         x += x
-        orgermanic = draw_col_box_text(screen, x, y, "Latin", font)
+        orgermanic = draw_col_box_text(screen, x, y, "Dutch", font)
+        
+        x += x
+        orgerman = draw_col_box_text(screen, x, y, "German", font)
 
         pygame.display.flip()
 
@@ -114,11 +117,10 @@ def draw_cbox_text(surface, cx, cy, text, font, border=0.5, bcolor=white, tcolor
     theight = T.get_height()
     bwidth = twidth + theight*border
     bheight = theight + theight*border/2
-    NA = 0
     
     bx, by = get_corner(cx, cy, bwidth, bheight)
     
-    B = pygame.Rect(bx, y, bwidth, bheight)
+    B = pygame.Rect(bx, by, bwidth, bheight)
     round_rect(surface, B, bcolor)
     
     render_text(surface, T, cx, cy)
