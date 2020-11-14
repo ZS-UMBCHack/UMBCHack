@@ -7,11 +7,11 @@ white = (255, 255, 255)
 NA = 0
 
 SWIDTH = 1000
-SHEIGHT = 500
+SHEIGHT = 700
 
-LINEWIDTH = 3
+LINEWIDTH = 6
 
-spacing = 25
+ROWSPACING = 25
 
 cx = SWIDTH / 2
 cy = SHEIGHT / 2
@@ -21,20 +21,20 @@ def main():
     pygame.init()
     running = True
 
-    font = pygame.font.Font("OpenDyslexic3-Regular.ttf", 20)
+    font = pygame.font.Font("OpenDyslexic3-Regular.ttf", 15)
 
     view_pos = 0, 0
-    y = spacing
+    y = ROWSPACING
     word = Text('Word:', font, center_x=cx, y=y)
 
-    y += spacing + word.rect.height
+    y += ROWSPACING + word.rect.height
     inword = BoxText('Word', font, center_x=cx, y=y)
 
-    y += 2 * spacing + inword.get_height()
+    y += 2 * ROWSPACING + inword.get_height()
     origin_tree = Text('Origin Tree:', font, center_x=cx, y=y)
 
     # old
-    y += spacing + origin_tree.rect.height
+    y += ROWSPACING + origin_tree.rect.height
     b_space = branch_space(3)
     x = b_space
     orlatin = BoxText('Latin', font, center_x=x, y=y)
@@ -46,9 +46,14 @@ def main():
     orgerman = BoxText('German', font, center_x=x, y=y)
 
     x = cx
-    y += 1.25 * spacing + max(orlatin.get_height(), orgermanic.get_height(), orgerman.get_height())
-    length = 2 * b_space
+    y += ROWSPACING + max(orlatin.get_height(), orgermanic.get_height(), orgerman.get_height())
+    length = 2*b_space
     branch_line_1 = Box(center_x=x, y=y, width=length, height=LINEWIDTH)
+    
+    obj = tree([[{"Language": "Latin", "Word": "sonus"}, {"Language": "", "Word": ""}],
+                [{"Language": "Anglo-Norman French", "Word": "soun/suner"}, {"Language": "", "Word": ""}],
+                [{"Language": "Middle English", "Word": "soun"},{"Language": "English", "Word": "-d"}],
+                [{"Language": "", "Word": "sound"}, {"Language": "", "Word": "sound"}]], 20, font)
 
     while running:
         # main loop
@@ -59,6 +64,7 @@ def main():
         screen.fill(black)
 
         # Draw some words!
+        """
         word.render(screen, view_pos)
         inword.render(screen, view_pos)
         origin_tree.render(screen, view_pos)
@@ -66,6 +72,9 @@ def main():
         orgermanic.render(screen, view_pos)
         orgerman.render(screen, view_pos)
         branch_line_1.render(screen, view_pos)
+        """
+        for el in obj:
+            el.render(screen, view_pos)
 
         pygame.display.flip()
 
@@ -100,16 +109,16 @@ class Box:
 
 
 class BoxText:
-    def __init__(self, text: str, font: pygame.font.Font, border=0.5, bcolor=white, tcolor=black, **kwargs):
+    def __init__(self, text: str, font: pygame.font.Font, border=15, bcolor=white, tcolor=black, **kwargs):
         self._color = bcolor
 
         self.text: Text = Text(text, font, tcolor, x=0, y=0)
 
         kwargs['width'] = self.text.rect.width + border * 2
-        kwargs['height'] = self.text.rect.height + border * 2
+        kwargs['height'] = self.text.rect.height + border *.5
         self.box = Box(bcolor, kwargs)
 
-        self.text.rect.center = self.box.rect.center
+        self.text.rect.center = self.box.rect.move(0, -self.text.rect.height*.07).center
 
     def get_height(self) -> int:
         return self.box.rect.height
@@ -135,11 +144,76 @@ class Text:
 
     def render(self, screen: pygame.Surface, view_pos):
         screen.blit(self._surface, self.rect.topleft + view_pos)
-
+        
+def tree(tree, starting_y, font):
+    """
+    The tree should be of the form [[{"Language": "Latin", "Word": "sonus"}, {"Language": "", "Word": ""}],
+    [{"Language": "Anglo-Norman French", "Word": "soun/suner"}, {"Language": "", "Word": ""}],
+    [{"Language": "Middle English", "Word": "soun"},{"English", "Word": "-d"}],
+    [{"Language": "", "Word": "sound"}, {"Language": "", "Word": "sound"}]]  with
+    "" representing empty space. Location of empty and non-empty space and the same dictionary indicate
+    the tree branches. The list goes from top to bottom. The last word should not have language written down.
+    """
+    # [[language y], [word y]]
+    columns = len(tree[0])
+    print(columns)
+    col_spacing = SWIDTH/(columns + 1)
+    y_tot = y_lang = starting_y
+    row = 0
+    obj = []
+    overlap = 2
+    for row in tree:
+        x_col = 0
+        y_vals = [[0],[0],[0]]
+        heights = [[0],[0],[0]]
+        for col in row:
+            y_lang = y_word = y_tot
+            
+            if col["Language"] != "":
+                lang = BoxText(col["Language"], font, center_x=x_col, y=y_lang)
+                
+                y_cline = y_lang + lang.get_height() - overlap
+                y_word = y_cline + ROWSPACING
+                
+                y_vals[0].append(y_lang)
+                heights.append(lang.box.rect.height)
+            
+            if col["Word"] != "":
+                word = BoxText(col["Word"], font, center_x=x_col, y=y_word)
+                
+                y_vals[1].append(y_word)
+                heights.append(word.box.rect.height)
+                
+            if col["Language"] != "" and col["Word"] != "":
+                len_cline = word.box.rect.centery - lang.box.rect.centery - lang.box.rect.height + overlap*2
+                cline = Box(center_x=x_col, y=y_cline, width=LINEWIDTH, height=len_cline)
+                
+                y_vals[2].append(y_cline)
+                heights.append(cline.rect.height)
+                
+        y_lang = max(y_vals[0])
+        y_word = max(y_vals[1])
+        y_cline = max(y_vals[2])
+        y_tot += max(heights[0]) + max(heights[1]) + max(heights[2]) + 2*ROWSPACING
+                
+        for col in row:
+            x_col += col_spacing
+            if col["Language"] != "":
+                lang = BoxText(col["Language"], font, center_x=x_col, y=y_lang)
+                obj.append(lang)
+            
+            if col["Word"] != "":
+                word = BoxText(col["Word"], font, center_x=x_col, y=y_word)
+                obj.append(word)
+                
+            if col["Language"] != "" and col["Word"] != "":
+                cline = Box(center_x=x_col, y=y_cline, width=LINEWIDTH, height=len_cline)
+                obj.append(cline)
+            
+    return obj
 
 def branch_space(branches):
     return SWIDTH / (branches + 1)
-
 
 def check_for_quit():
     boolean = True
