@@ -21,7 +21,7 @@ def main():
     pygame.init()
     running = True
 
-    font = pygame.font.Font("OpenDyslexic3-Regular.ttf", 20)
+    font = pygame.font.Font("assets/OpenDyslexic3-Regular.ttf", 20)
 
     view_pos = 0, 0
     y = spacing
