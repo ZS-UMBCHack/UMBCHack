@@ -7,7 +7,7 @@ red = (255, 0, 0)
 black = (0, 0, 0)
 white = (255, 255, 255)
 
-SWIDTH = 500
+SWIDTH = 1000
 SHEIGHT = 500
 
 spacing = 25
@@ -40,19 +40,22 @@ def main():
         origint = draw_col_text(screen, cx, y, "Origin Tree:", font)
         
         y += spacing + obj_space(origint)
-        number_of_branches = 3
-        x = SWIDTH/(number_of_branches + 1)
+        b_space = branch_space(3)
+        x = b_space
         orlatin = draw_col_box_text(screen, x, y, "Latin", font)
         
-        x += x
+        x += b_space
         orgermanic = draw_col_box_text(screen, x, y, "Dutch", font)
         
-        x += x
+        x += b_space
         orgerman = draw_col_box_text(screen, x, y, "German", font)
 
         pygame.display.flip()
 
         # running = check_for_quit(button)
+
+def branch_space(branches):
+    return SWIDTH/(branches + 1)
 
 def obj_space(obj):
     return obj[2]/2
