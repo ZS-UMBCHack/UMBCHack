@@ -23,7 +23,7 @@ def main():
     pygame.init()
     running = True
     
-    font = pygame.font.SysFont("comicsansms", 20)
+    font = pygame.font.Font("C:/Windows/Fonts/OpenDyslexic3-Regular.ttf", 20)
 
     while running:
         # main loop
@@ -55,7 +55,7 @@ def main():
         orgerman = draw_col_box_text(screen, x, y, "German", font)
         
         x = cx
-        y += spacing + max(obj_space(orlatin), obj_space(orgermanic), obj_space(orgerman))
+        y += 1.25*spacing + max(obj_space(orlatin), obj_space(orgermanic), obj_space(orgerman))
         length = 2*b_space
         branch_line_1 = draw_col_box(screen, x, y, length, LINEWIDTH)
 
@@ -113,7 +113,7 @@ def draw_box_text(surface, x, y, text, font, border=0.5, bcolor=white, tcolor=bl
     twidth = T.get_width()
     theight = T.get_height()
     bwidth = twidth + theight*border
-    bheight = theight + theight*border/2
+    bheight = theight + theight*border/8
     
     B = pygame.Rect(x, y, bwidth, bheight)
     round_rect(surface, B, bcolor)
@@ -131,7 +131,7 @@ def draw_cbox_text(surface, cx, cy, text, font, border=0.5, bcolor=white, tcolor
     twidth = T.get_width()
     theight = T.get_height()
     bwidth = twidth + theight*border
-    bheight = theight + theight*border/2
+    bheight = theight + theight*border/8
     
     bx, by = get_corner(cx, cy, bwidth, bheight)
     
@@ -151,7 +151,7 @@ def draw_col_box_text(surface, cx, y, text, font, border=0.5, bcolor=white, tcol
     twidth = T.get_width()
     theight = T.get_height()
     bwidth = twidth + theight*border
-    bheight = theight + theight*border/2
+    bheight = theight + theight*border/8
     NA = 0
     
     bx, NA = get_corner(cx, NA, bwidth, NA)
@@ -200,7 +200,7 @@ def move_button(button, text, dx=1, dy=0):
     #text = text.move(dx, dy)
 
 def render_text(surface, text, cx, cy):
-    return surface.blit(text, (cx - text.get_width() // 2, cy - text.get_height() // 2))
+    return surface.blit(text, (cx - text.get_width() // 2, cy - text.get_height() // 1.7))
 
 def def_text(text, font, color):
     return font.render(text, True, color)
