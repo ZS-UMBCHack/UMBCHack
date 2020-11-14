@@ -7,6 +7,9 @@ red = (255, 0, 0)
 black = (0, 0, 0)
 white = (255, 255, 255)
 
+SWIDTH = 400
+SHEIGHT = 300
+
 def main():
     pygame.init()
     running = True
@@ -15,29 +18,41 @@ def main():
 
     while running:
         # main loop
-        screen = def_screen(400, 300)
+        screen = def_screen(SWIDTH, SHEIGHT)
         clock = pygame.time.Clock()
         
         clock.tick(120)
         screen.fill(black)
         
-        button, text = draw_button(screen, 0, 30, "Hello, World", font)
+        button, text = draw_button(screen, SWIDTH/2, SHEIGHT/2, "Hello, World", font)
+        
+        text2 = draw_text(screen, SWIDTH/2, SHEIGHT/4, "Words", font)
 
         pygame.display.flip()
 
         running = check_for_quit(button)
+        
+def draw_text(surface, cx, cy, text, font, color=white):
+    T = def_text(text, font, color)
+    render_text(surface, T, cx, cy)
+    
+    return T
  
-def draw_button(surface, bx, by, text, font, bcolor=white, tcolor=black):
+def draw_button(surface, cx, cy, text, font, border=1, bcolor=white, tcolor=black):
+    """
+    Border: 0 <= border <= 1+, where 0 is no border, 1 is border same height as text.
+    """
     T = def_text(text, font, tcolor)
     render_text(surface, T, -1000, -1000)
     twidth = T.get_width()
     theight = T.get_height()
-    bwidth = twidth + twidth / 4
-    bheight = theight + theight / 4
+    bwidth = twidth + theight*border
+    bheight = theight + theight*border/2
+    
+    bx, by = (cx - bwidth // 2, cy - bheight // 2)
     
     B = pygame.Rect(bx, by, bwidth, bheight)
     round_rect(surface, B, bcolor)
-    cx, cy = get_center(bx, by, bwidth, bheight)
     
     render_text(surface, T, cx, cy)
     
