@@ -7,8 +7,13 @@ red = (255, 0, 0)
 black = (0, 0, 0)
 white = (255, 255, 255)
 
-SWIDTH = 400
-SHEIGHT = 300
+SWIDTH = 500
+SHEIGHT = 500
+
+spacing = 25
+
+cx = SWIDTH/2
+cy = SHEIGHT/2
 
 def main():
     pygame.init()
@@ -24,21 +29,64 @@ def main():
         clock.tick(120)
         screen.fill(black)
         
-        button, text = draw_button(screen, SWIDTH/2, SHEIGHT/2, "Hello, World", font)
+        # Draw some words!
+        y = spacing
+        word = draw_col_text(screen, cx, y, "Word:", font)
         
-        text2 = draw_text(screen, SWIDTH/2, SHEIGHT/4, "Words", font)
+        y += spacing + obj_space(word)
+        inword = draw_col_box_text(screen, cx, y, "Word", font)
+        
+        y += 2*spacing + obj_space(inword)
+        origint = draw_col_text(screen, cx, y, "Origin Tree:", font)
+        
+        y += spacing + obj_space(origint)
+        number_of_branches = 3
+        x = SWIDTH/number_of_branches
+        orlatin = draw_col_box_text(screen, x, y, "Latin", font)
+        
+        x += x
+        orgermanic = draw_col_box_text(screen, x, y, "Latin", font)
 
         pygame.display.flip()
 
-        running = check_for_quit(button)
-        
-def draw_text(surface, cx, cy, text, font, color=white):
+        # running = check_for_quit(button)
+
+def obj_space(obj):
+    return obj[2]/2
+    
+def draw_text(surface, x, y, text, font, color=white):
     T = def_text(text, font, color)
+    cx, cy = get_center(x, y, T.get_width(), T.get_height())
+    render_text(surface, T, cx, cy)
+    twidth = T.get_width()
+    theight = T.get_height()
+    
+    return T, twidth, theight
+
+def draw_ctext(surface, cx, cy, text, font, color=white):
+    T = def_text(text, font, color)
+    render_text(surface, T, -1000, -1000)
+    twidth = T.get_width()
+    theight = T.get_height()
+    
     render_text(surface, T, cx, cy)
     
-    return T
- 
-def draw_button(surface, cx, cy, text, font, border=1, bcolor=white, tcolor=black):
+    return T, twidth, theight
+
+def draw_col_text(surface, cx, y, text, font, color=white):
+    T = def_text(text, font, color)
+    render_text(surface, T, -1000, -1000)
+    twidth = T.get_width()
+    theight = T.get_height()
+    NA = 0
+
+    NA, cy = get_center(NA, y, NA, T.get_height())
+    
+    render_text(surface, T, cx, cy)
+    
+    return T, twidth, theight
+
+def draw_box_text(surface, x, y, text, font, border=0.5, bcolor=white, tcolor=black):
     """
     Border: 0 <= border <= 1+, where 0 is no border, 1 is border same height as text.
     """
@@ -49,14 +97,58 @@ def draw_button(surface, cx, cy, text, font, border=1, bcolor=white, tcolor=blac
     bwidth = twidth + theight*border
     bheight = theight + theight*border/2
     
-    bx, by = (cx - bwidth // 2, cy - bheight // 2)
-    
-    B = pygame.Rect(bx, by, bwidth, bheight)
+    B = pygame.Rect(x, y, bwidth, bheight)
     round_rect(surface, B, bcolor)
     
     render_text(surface, T, cx, cy)
     
-    return B, T
+    return B, T, bwidth, bheight
+ 
+def draw_cbox_text(surface, cx, cy, text, font, border=0.5, bcolor=white, tcolor=black):
+    """
+    Border: 0 <= border <= 1+, where 0 is no border, 1 is border same height as text.
+    """
+    T = def_text(text, font, tcolor)
+    render_text(surface, T, -1000, -1000)
+    twidth = T.get_width()
+    theight = T.get_height()
+    bwidth = twidth + theight*border
+    bheight = theight + theight*border/2
+    NA = 0
+    
+    bx, by = get_corner(cx, cy, bwidth, bheight)
+    
+    B = pygame.Rect(bx, y, bwidth, bheight)
+    round_rect(surface, B, bcolor)
+    
+    render_text(surface, T, cx, cy)
+    
+    return B, T, bwidth, bheight
+ 
+def draw_col_box_text(surface, cx, y, text, font, border=0.5, bcolor=white, tcolor=black):
+    """
+    Border: 0 <= border <= 1+, where 0 is no border, 1 is border same height as text.
+    """
+    T = def_text(text, font, tcolor)
+    render_text(surface, T, -1000, -1000)
+    twidth = T.get_width()
+    theight = T.get_height()
+    bwidth = twidth + theight*border
+    bheight = theight + theight*border/2
+    NA = 0
+    
+    bx, NA = get_corner(cx, NA, bwidth, NA)
+    NA, cy = get_center(NA, y, NA, bheight)
+    
+    B = pygame.Rect(bx, y, bwidth, bheight)
+    round_rect(surface, B, bcolor)
+    
+    render_text(surface, T, cx, cy)
+    
+    return B, T, bwidth, bheight
+
+def get_corner(cx, cy, width, height):
+    return (cx - width // 2, cy - height // 2)
     
 def get_center(x, y, width, height):
     return (x + width // 2, y + height // 2)
