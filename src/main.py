@@ -24,31 +24,6 @@ def main():
     font = pygame.font.Font("assets/OpenDyslexic3-Regular.ttf", 15)
 
     view_pos = 0, 0
-    y = ROWSPACING
-    word = Text('Word:', font, center_x=cx, y=y)
-
-    y += ROWSPACING + word.rect.height
-    inword = BoxText('Word', font, center_x=cx, y=y)
-
-    y += 2 * ROWSPACING + inword.get_height()
-    origin_tree = Text('Origin Tree:', font, center_x=cx, y=y)
-
-    # old
-    y += ROWSPACING + origin_tree.rect.height
-    b_space = branch_space(3)
-    x = b_space
-    orlatin = BoxText('Latin', font, center_x=x, y=y)
-
-    x += b_space
-    orgermanic = BoxText('Dutch', font, center_x=x, y=y)
-
-    x += b_space
-    orgerman = BoxText('German', font, center_x=x, y=y)
-
-    x = cx
-    y += ROWSPACING + max(orlatin.get_height(), orgermanic.get_height(), orgerman.get_height())
-    length = 2 * b_space
-    branch_line_1 = Box(center_x=x, y=y, width=length, height=LINEWIDTH)
 
     obj = tree([[{"Language": "Latin", "Word": "sonus"}, {"Language": "", "Word": ""}],
                 [{"Language": "Anglo-Norman French", "Word": "soun/suner"}, {"Language": "", "Word": ""}],
@@ -63,16 +38,6 @@ def main():
         clock.tick(120)
         screen.fill(black)
 
-        # Draw some words!
-        """
-        word.render(screen, view_pos)
-        inword.render(screen, view_pos)
-        origin_tree.render(screen, view_pos)
-        orlatin.render(screen, view_pos)
-        orgermanic.render(screen, view_pos)
-        orgerman.render(screen, view_pos)
-        branch_line_1.render(screen, view_pos)
-        """
         for el in obj:
             el.render(screen, view_pos)
 
