@@ -1,7 +1,4 @@
 import pygame
-import cairo
-import math
-import numpy
 
 red = (255, 0, 0)
 black = (0, 0, 0)
@@ -31,10 +28,27 @@ def main():
     word = Text('Word:', font, center_x=cx, y=y)
 
     y += spacing + word.rect.height
-    inword = TextBox('Word', font, center_x=cx, y=y)
+    inword = BoxText('Word', font, center_x=cx, y=y)
 
-    y += 2 * spacing + inword.rect.height
+    y += 2 * spacing + inword.get_height()
     origin_tree = Text('Origin Tree:', font, center_x=cx, y=y)
+
+    # old
+    y += spacing + origin_tree.rect.height
+    b_space = branch_space(3)
+    x = b_space
+    orlatin = BoxText('Latin', font, center_x=x, y=y)
+
+    x += b_space
+    orgermanic = BoxText('Dutch', font, center_x=x, y=y)
+
+    x += b_space
+    orgerman = BoxText('German', font, center_x=x, y=y)
+
+    x = cx
+    y += 1.25 * spacing + max(orlatin.get_height(), orgermanic.get_height(), orgerman.get_height())
+    length = 2 * b_space
+    branch_line_1 = Box(center_x=x, y=y, width=length, height=LINEWIDTH)
 
     while running:
         # main loop
@@ -48,51 +62,60 @@ def main():
         word.render(screen, view_pos)
         inword.render(screen, view_pos)
         origin_tree.render(screen, view_pos)
-
-        y += spacing + origin_tree.rect.height
-        b_space = branch_space(3)
-        x = b_space
-        orlatin = draw_col_box_text(screen, x, y, "Latin", font)
-
-        x += b_space
-        orgermanic = draw_col_box_text(screen, x, y, "Dutch", font)
-
-        x += b_space
-        orgerman = draw_col_box_text(screen, x, y, "German", font)
-
-        x = cx
-        y += 1.25 * spacing + max(obj_space(orlatin), obj_space(orgermanic), obj_space(orgerman))
-        length = 2 * b_space
-        branch_line_1 = draw_col_box(screen, x, y, length, LINEWIDTH)
+        orlatin.render(screen, view_pos)
+        orgermanic.render(screen, view_pos)
+        orgerman.render(screen, view_pos)
+        branch_line_1.render(screen, view_pos)
 
         pygame.display.flip()
 
-        # running = check_for_quit(button)
+        running = check_for_quit()
 
 
-class TextBox:
+class Box:
+    def __init__(self, color=white, pass_args=None, **kwargs):
+        self._color = color
+
+        if pass_args is None:
+            pass_args = kwargs
+        else:
+            pass_args.update(kwargs)
+
+        self.rect = pygame.Rect(0, 0, 0, 0)
+        if 'x' in pass_args.keys():
+            self.rect.x = pass_args['x']
+        if 'y' in pass_args.keys():
+            self.rect.y = pass_args['y']
+        if 'width' in pass_args.keys():
+            self.rect.width = pass_args['width']
+        if 'height' in pass_args.keys():
+            self.rect.height = pass_args['height']
+        if 'center_x' in pass_args.keys():
+            self.rect.x = pass_args['center_x'] - self.rect.width / 2
+        if 'center_y' in pass_args.keys():
+            self.rect.y = pass_args['center_y'] - self.rect.height / 2
+
+    def render(self, screen: pygame.Surface, view_pos):
+        round_rect(screen, self.rect.move(view_pos), self._color)
+
+
+class BoxText:
     def __init__(self, text: str, font: pygame.font.Font, border=0.5, bcolor=white, tcolor=black, **kwargs):
         self._color = bcolor
 
-        self.rect = pygame.Rect(0, 0, 0, 0)
         self.text: Text = Text(text, font, tcolor, x=0, y=0)
 
-        self.rect.width = self.text.rect.width + border * 2
-        self.rect.height = self.text.rect.height + border * 2
+        kwargs['width'] = self.text.rect.width + border * 2
+        kwargs['height'] = self.text.rect.height + border * 2
+        self.box = Box(bcolor, kwargs)
 
-        if 'x' in kwargs.keys():
-            self.rect.x = kwargs['x']
-        if 'y' in kwargs.keys():
-            self.rect.y = kwargs['y']
-        if 'center_x' in kwargs.keys():
-            self.rect.centerx = kwargs['center_x']
-        if 'center_y' in kwargs.keys():
-            self.rect.centery = kwargs['center_y']
+        self.text.rect.center = self.box.rect.center
 
-        self.text.rect.center = self.rect.center
+    def get_height(self) -> int:
+        return self.box.rect.height
 
     def render(self, screen: pygame.Surface, view_pos):
-        round_rect(screen, self.rect, self._color)
+        self.box.render(screen, view_pos)
         self.text.render(screen, view_pos)
 
 
@@ -118,169 +141,11 @@ def branch_space(branches):
     return SWIDTH / (branches + 1)
 
 
-def obj_space(obj):
-    return obj[1] / 2
-
-
-def obj_hspace(obj):
-    return obj[0] / 2
-
-
-def draw_text(surface, x, y, text, font, color=white):
-    T = def_text(text, font, color)
-    cx, cy = get_center(x, y, T.get_width(), T.get_height())
-    render_text(surface, T, cx, cy)
-    twidth = T.get_width()
-    theight = T.get_height()
-
-    return twidth, theight, T
-
-
-def draw_ctext(surface, cx, cy, text, font, color=white):
-    T = def_text(text, font, color)
-    render_text(surface, T, -1000, -1000)
-    twidth = T.get_width()
-    theight = T.get_height()
-
-    render_text(surface, T, cx, cy)
-
-    return twidth, theight, T
-
-
-def draw_col_text(surface, cx, y, text, font, color=white):
-    T = def_text(text, font, color)
-    render_text(surface, T, -1000, -1000)
-    twidth = T.get_width()
-    theight = T.get_height()
-    NA = 0
-
-    NA, cy = get_center(NA, y, NA, T.get_height())
-
-    render_text(surface, T, cx, cy)
-
-    return twidth, theight, T
-
-
-def draw_box_text(surface, x, y, text, font, border=0.5, bcolor=white, tcolor=black):
-    """
-    Border: 0 <= border <= 1+, where 0 is no border, 1 is border same height as text.
-    """
-    T = def_text(text, font, tcolor)
-    render_text(surface, T, -1000, -1000)
-    twidth = T.get_width()
-    theight = T.get_height()
-    bwidth = twidth + theight * border
-    bheight = theight + theight * border / 8
-
-    B = pygame.Rect(x, y, bwidth, bheight)
-    round_rect(surface, B, bcolor)
-
-    render_text(surface, T, cx, cy)
-
-    return bwidth, bheight, T, B
-
-
-def draw_cbox_text(surface, cx, cy, text, font, border=0.5, bcolor=white, tcolor=black):
-    """
-    Border: 0 <= border <= 1+, where 0 is no border, 1 is border same height as text.
-    """
-    T = def_text(text, font, tcolor)
-    render_text(surface, T, -1000, -1000)
-    twidth = T.get_width()
-    theight = T.get_height()
-    bwidth = twidth + theight * border
-    bheight = theight + theight * border / 8
-
-    bx, by = get_corner(cx, cy, bwidth, bheight)
-
-    B = pygame.Rect(bx, by, bwidth, bheight)
-    round_rect(surface, B, bcolor)
-
-    render_text(surface, T, cx, cy)
-
-    return bwidth, bheight, T, B
-
-
-def draw_col_box_text(surface, cx, y, text, font, border=0.5, bcolor=white, tcolor=black):
-    """
-    Border: 0 <= border <= 1+, where 0 is no border, 1 is border same height as text.
-    """
-    T = def_text(text, font, tcolor)
-    render_text(surface, T, -1000, -1000)
-    twidth = T.get_width()
-    theight = T.get_height()
-    bwidth = twidth + theight * border
-    bheight = theight + theight * border / 8
-    NA = 0
-
-    bx, NA = get_corner(cx, NA, bwidth, NA)
-    NA, cy = get_center(NA, y, NA, bheight)
-
-    B = pygame.Rect(bx, y, bwidth, bheight)
-    round_rect(surface, B, bcolor)
-
-    render_text(surface, T, cx, cy)
-
-    return bwidth, bheight, T, B
-
-
-def draw_box(surface, x, y, width, height, color=white):
-    B = pygame.Rect(x, y, width, height)
-    round_rect(surface, B, color)
-
-    return width, height, NA, B
-
-
-def draw_cbox(surface, cx, cy, width, height, color=white):
-    bx, by = get_corner(cx, cy, width, height)
-
-    B = pygame.Rect(bx, by, width, height)
-    round_rect(surface, B, color)
-
-    return width, height, NA, B
-
-
-def draw_col_box(surface, cx, y, width, height, color=white):
-    NA = 0
-
-    bx, NA = get_corner(cx, NA, width, NA)
-    NA, cy = get_center(NA, y, NA, height)
-
-    B = pygame.Rect(bx, y, width, height)
-    round_rect(surface, B, color)
-
-    return width, height, NA, B
-
-
-def get_corner(cx, cy, width, height):
-    return (cx - width // 2, cy - height // 2)
-
-
-def get_center(x, y, width, height):
-    return (x + width // 2, y + height // 2)
-
-
-def move_button(button, text, dx=1, dy=0):
-    return button.move(dx, dy)
-    # text = text.move(dx, dy)
-
-
-def render_text(surface, text, cx, cy):
-    return surface.blit(text, (cx - text.get_width() // 2, cy - text.get_height() // 1.7))
-
-
-def def_text(text, font, color):
-    return font.render(text, True, color)
-
-
-def check_for_quit(button):
+def check_for_quit():
     boolean = True
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             boolean = False
-        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:  # left click
-            if button.collidepoint(pygame.mouse.get_pos()):
-                print("click!")
     return boolean
 
 
