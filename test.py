@@ -23,7 +23,7 @@ def main():
     pygame.init()
     running = True
     
-    font = pygame.font.Font("C:/Windows/Fonts/OpenDyslexic3-Regular.ttf", 20)
+    font = pygame.font.Font("OpenDyslexic3-Regular.ttf", 20)
 
     while running:
         # main loop
