@@ -146,7 +146,7 @@ def tree(tree, starting_y, font):
     columns = len(tree[0])
     print(columns)
     col_spacing = SWIDTH / (columns + 1)
-    y_tot = y_lang = starting_y
+    y_tot = starting_y
     row = 0
     obj = []
     overlap = 2
@@ -161,23 +161,23 @@ def tree(tree, starting_y, font):
                 lang = BoxText(col["Language"], font, center_x=x_col, y=y_lang)
 
                 y_cline = y_lang + lang.get_height() - overlap
-                y_word = y_cline + ROWSPACING
+                y_word = lang.get_height() + ROWSPACING
 
                 y_vals[0].append(y_lang)
-                heights.append(lang.box.rect.height)
+                heights[0].append(lang.box.rect.height)
 
             if col["Word"] != "":
                 word = BoxText(col["Word"], font, center_x=x_col, y=y_word)
 
                 y_vals[1].append(y_word)
-                heights.append(word.box.rect.height)
+                heights[1].append(word.box.rect.height)
 
             if col["Language"] != "" and col["Word"] != "":
                 len_cline = word.box.rect.centery - lang.box.rect.centery - lang.box.rect.height + overlap * 2
                 cline = Box(center_x=x_col, y=y_cline, width=LINEWIDTH, height=len_cline)
 
                 y_vals[2].append(y_cline)
-                heights.append(cline.rect.height)
+                heights[2].append(cline.rect.height)
 
         y_lang = max(y_vals[0])
         y_word = max(y_vals[1])
