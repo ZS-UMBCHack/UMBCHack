@@ -1,8 +1,56 @@
 # -*- coding: utf-8 -*-
-import pygame
+import pygame, math
 
 black = (0, 0, 0)
 white = (255, 255, 255)
+
+class Point2D:
+   def __init__(self, x,y):
+       self.x = x
+       self.y = y
+
+   def __add__(self, obj):
+       """ This Function will translate a Point """
+       self.x = obj.x
+       self.y = obj.y
+
+   def rotate(self, arc):
+       """ This function will rotate by arc around (0,0) """
+       sa = math.sin(arc)
+       ca = math.cos(arc)
+
+       x = ca * self.x - sa * self.y
+       self.y = sa * self.x + ca * self.y
+       self.x = x
+
+class Triangle:
+    def __init__(self, color=white, pass_args=None, **kwargs):
+        self._color = color
+
+        if pass_args is None:
+            pass_args = kwargs
+        else:
+            pass_args.update(kwargs)
+        self.rect = create_rect(pass_args)
+        
+    def drawTriangle(window, center, radius, rotation):
+        corner = Point2D(radius, 0)
+    
+        pointlist = [None]
+    
+        for i in range(3):
+            pointlist[i] = [int(corner.x+center.x), int(corner.y+center.y)]
+    
+            if i == 2:
+               break
+    
+            # Rotate the corner by 60 degrees
+            corner = corner.rotate(math.pi/3)        
+
+        pygame.draw.polygon(window, color, pointlist, width)
+
+    def render(self, screen: pygame.Surface, view_pos):
+        round_rect(screen, self.rect.move(view_pos), self._color)
 
 class Box:
     def __init__(self, color=white, pass_args=None, **kwargs):
