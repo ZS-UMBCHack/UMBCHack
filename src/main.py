@@ -24,7 +24,7 @@ def main():
     screen.fill(graphics.black)
     clock = pygame.time.Clock()
     running = True
-    screen_draging = False
+    screen_dragging = False
     obj = []
 
     fontr = pygame.font.Font("assets/OpenDyslexic3-Regular.ttf", 20)
@@ -35,9 +35,10 @@ def main():
     y, words = create_word("'goodbye'", fontr, fontb, yi)
     y += 2 * ROWSPACING
     y, branches = create_tree([[{"Language": "English", "Word": "'God be with you!'"},
-                                {"Language": "English", "Word": "'good'"}, {"Language": "English", "Word": "'good morning'"}],
+                                {"Language": "English", "Word": "'good'"},
+                                {"Language": "English", "Word": "'good morning'"}],
                                [{"Language": "", "Word": "'goodbye'"}, {"Language": "", "Word": "'goodbye'"},
-                         {"Language": "", "Word": "'goodbye'"}]], y, fontr, fontb)
+                                {"Language": "", "Word": "'goodbye'"}]], y, fontr, fontb)
 
     while running:
         # main loop
@@ -54,22 +55,14 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                screen_draging = True
-                for el in obj:
-                    mouse_x, mouse_y = event.pos
-                    offset_x = mouse_x
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                screen_dragging = True
 
-            elif event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
-                    screen_draging = False
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                screen_dragging = False
 
-            elif event.type == pygame.MOUSEMOTION:
-                if screen_draging:
-                    mouse_x, mouse_y = event.pos
-                    for el in obj:
-                        view_pos = mouse_x + offset_x
-                        el.render(screen, view_pos)
+            elif event.type == pygame.MOUSEMOTION and screen_dragging:
+                view_pos = view_pos[0] + event.pos[0], view_pos[1] + event.pos[1]
 
         pygame.display.flip()
 
