@@ -38,14 +38,14 @@ def main():
                                 {"Language": "English", "Word": "'good morning'"}],
                                [{"Language": "", "Word": "'goodbye'"}, {"Language": "", "Word": "'goodbye'"},
                                 {"Language": "", "Word": "'goodbye'"}]], y, fontr, fontb)
+    
+    obj += branches
+    obj += words
 
     while running:
         # main loop
         clock.tick(120)
         screen.fill(graphics.black)
-
-        obj += branches
-        obj += words
 
         for el in obj:
             el.render(screen, view_pos)
