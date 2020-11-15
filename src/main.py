@@ -38,8 +38,7 @@ def main():
 
         clock.tick(120)
         screen.fill(black)
-
-        # Draw some words!
+      
         for el in obj:
             el.render(screen, view_pos)
 
