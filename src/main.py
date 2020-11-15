@@ -38,7 +38,7 @@ def main():
 
         clock.tick(120)
         screen.fill(black)
-      
+
         for el in obj:
             el.render(screen, view_pos)
 
@@ -114,7 +114,7 @@ def tree(tree, starting_y, font):
     columns = len(tree[0])
     col_spacing = SWIDTH / (columns + 1)
     prevcols = None
-    y_tot = starting_y - (ARROWLENGTH + 2*ROWSPACING)
+    y_tot = starting_y - (ARROWLENGTH + 2 * ROWSPACING)
     y_larrow = 0
     row = 0
     obj = []
@@ -122,41 +122,44 @@ def tree(tree, starting_y, font):
     for row in tree:
         y_vals = [[0], [0], [0]]
         heights = [[0], [0], [0]]
-        y_tot += ARROWLENGTH + 2*ROWSPACING
-        
+        y_tot += ARROWLENGTH + 2 * ROWSPACING
+
         elements = []
         count = 1
-        prevel = None
+        prev_el = None
         for col in range(len(row)):
-            if row[col] == prevel:
+            if prev_el is not None and row[col]['Word'] == prev_el['Word']:
                 count += 1
                 if col == len(row) - 1:
                     elements.append({"Language": row[col]["Language"], "Word": row[col]["Word"], "Count": count})
             else:
-                elements.append({"Language": row[col]["Language"], "Word": row[col]["Word"], "Count": count})
+                if prev_el is not None:
+                    elements.append({"Language": prev_el["Language"], "Word": prev_el["Word"], "Count": count})
+                    if col == len(row) - 1:
+                        elements.append({"Language": row[col]["Language"], "Word": row[col]["Word"], "Count": count})
                 count = 1
-            
-            prevel = row[col]
-            
+
+            prev_el = row[col]
+
         print("elements:", elements)
-        
-        if prevcols != None:
+
+        if prevcols is not None:
             print("ran1")
             y_hline = y_larrow
             for el in elements:
-                el_count = el["Count"] + 1
+                el_count = el["Count"]
                 print("number of repeats of el", el["Count"])
                 if el_count > 1:
                     print("ran2")
-                    x_hline = elements.index(el)*col_spacing - LINEWIDTH / 2
-                    len_hline = col_spacing*(el_count - 1)
+                    x_hline = (elements.index(el) + 1) * col_spacing - LINEWIDTH / 2
+                    len_hline = col_spacing * (el_count - 1)
                     hline = Box(x=x_hline, y=y_hline, width=len_hline, height=LINEWIDTH)
                     obj.append(hline)
-        
+
         columns = len(elements)
         print("number of columns:", columns)
         col_spacing = SWIDTH / (columns + 1)
-        
+
         for el in elements:
             y_lang = y_word = y_tot
 
@@ -174,7 +177,7 @@ def tree(tree, starting_y, font):
 
                 y_vals[1].append(y_word)
                 heights[1].append(word.box.rect.height)
-                
+
                 prevcols = 0
 
             if el["Language"] != "" and el["Word"] != "":
@@ -183,16 +186,16 @@ def tree(tree, starting_y, font):
 
                 y_vals[2].append(y_cline)
                 heights[2].append(cline.rect.height)
-                
+
         print("el of elements:", el, "\ny_lang:", y_lang, "y_word:", y_word, "y_cline:", y_cline, "\n")
 
         y_lang = max(y_vals[0])
         y_word = max(y_vals[1] + y_vals[0])
         y_cline = max(y_vals[2])
-        y_tot += max(heights[0]) + max(heights[1]) + max(heights[2]) - 2*overlap
-        
+        y_tot += max(heights[0]) + max(heights[1]) + max(heights[2]) - 2 * overlap
+
         print("row:", row, "\ny_lang:", y_lang, "y_word:", y_word, "y_cline:", y_cline, "\n")
-        
+
         x_col = 0
         for el in elements:
             x_col += col_spacing
@@ -206,14 +209,14 @@ def tree(tree, starting_y, font):
 
             if el["Language"] != "" and el["Word"] != "":
                 cline = Box(center_x=x_col, y=y_cline, width=LINEWIDTH, height=len_cline)
-                obj.append(cline)        
-                
+                obj.append(cline)
+
                 y_larrow = y_tot + ROWSPACING
                 larrow = Box(center_x=x_col, y=y_larrow, width=LINEWIDTH, height=ARROWLENGTH)
                 obj.append(larrow)
-                
+
         prevcols = columns
-                    
+
     return obj
 
 

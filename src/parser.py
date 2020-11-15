@@ -7,6 +7,24 @@ from wiktionaryparser import WiktionaryParser
 paren_quote_pattern = re.compile('\\("[^(]+"\\)')
 quote_pattern = re.compile('\\([^(]+\\)')
 
+origin_phrases = [
+    'from a variant of',
+    'from earlier',
+    'from',
+    'abbreviation of',
+    'borrowed from',
+]
+
+skip_phrases = [
+    'variant of',
+    'variants of',
+    'equivalent to',
+]
+
+stop_phrases = [
+    ''
+]
+
 
 def get_etymology_trees(word_str: str, language: str) -> List[Word]:
     parser = WiktionaryParser()
@@ -40,7 +58,13 @@ def parse(text: str):
         index += 1
         match = re.search(quote_pattern, subbed_text)
 
+    sentences = [i.strip() for i in subbed_text.split('.')]
+    statements = []
+    for sentence in sentences:
+        statements += sentence.split(';')
 
+    for statement in statements:
+        pass
 
 
 class Word:
@@ -51,4 +75,5 @@ class Word:
 
 
 if __name__ == '__main__':
-    get_etymology_trees("sound", "English")
+    # get_etymology_trees("sound", "English")
+    WiktionaryParser().fetch("sound", "english")
