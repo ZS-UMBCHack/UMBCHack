@@ -10,6 +10,7 @@ SWIDTH = 1000
 SHEIGHT = 700
 
 LINEWIDTH = 6
+ARROWLENGTH = 30
 
 ROWSPACING = 25
 
@@ -24,31 +25,6 @@ def main():
     font = pygame.font.Font("assets/OpenDyslexic3-Regular.ttf", 15)
 
     view_pos = 0, 0
-    y = ROWSPACING
-    word = Text('Word:', font, center_x=cx, y=y)
-
-    y += ROWSPACING + word.rect.height
-    inword = BoxText('Word', font, center_x=cx, y=y)
-
-    y += 2 * ROWSPACING + inword.get_height()
-    origin_tree = Text('Origin Tree:', font, center_x=cx, y=y)
-
-    # old
-    y += ROWSPACING + origin_tree.rect.height
-    b_space = branch_space(3)
-    x = b_space
-    orlatin = BoxText('Latin', font, center_x=x, y=y)
-
-    x += b_space
-    orgermanic = BoxText('Dutch', font, center_x=x, y=y)
-
-    x += b_space
-    orgerman = BoxText('German', font, center_x=x, y=y)
-
-    x = cx
-    y += ROWSPACING + max(orlatin.get_height(), orgermanic.get_height(), orgerman.get_height())
-    length = 2 * b_space
-    branch_line_1 = Box(center_x=x, y=y, width=length, height=LINEWIDTH)
 
     obj = tree([[{"Language": "Latin", "Word": "sonus"}, {"Language": "", "Word": ""}],
                 [{"Language": "Anglo-Norman French", "Word": "soun/suner"}, {"Language": "", "Word": ""}],
@@ -64,15 +40,6 @@ def main():
         screen.fill(black)
 
         # Draw some words!
-        """
-        word.render(screen, view_pos)
-        inword.render(screen, view_pos)
-        origin_tree.render(screen, view_pos)
-        orlatin.render(screen, view_pos)
-        orgermanic.render(screen, view_pos)
-        orgerman.render(screen, view_pos)
-        branch_line_1.render(screen, view_pos)
-        """
         for el in obj:
             el.render(screen, view_pos)
 
@@ -135,69 +102,119 @@ class Text:
 
 def tree(tree, starting_y, font):
     """
-    The tree should be of the form [[{"Language": "Latin", "Word": "sonus"}, {"Language": "", "Word": ""}],
-    [{"Language": "Anglo-Norman French", "Word": "soun/suner"}, {"Language": "", "Word": ""}],
-    [{"Language": "Middle English", "Word": "soun"},{"English", "Word": "-d"}],
-    [{"Language": "", "Word": "sound"}, {"Language": "", "Word": "sound"}]]  with
-    "" representing empty space. Location of empty and non-empty space and the same dictionary indicate
-    the tree branches. The list goes from top to bottom. The last word should not have language written down.
+    The tree should be of the form
+    [[{"Language": "Latin", "Word": "sonus"}, {"Language": "", "Word": ""}],
+     [{"Language": "Anglo-Norman French", "Word": "soun/suner"}, {"Language": "", "Word": ""}],
+     [{"Language": "Middle English", "Word": "soun"},{"Language": "English", "Word": "-d"}],
+     [{"Language": "", "Word": "sound"}, {"Language": "", "Word": "sound"}]]
+    with "" representing empty space. Location of empty and non-empty space and the same dictionary (combined branches)
+    indicate the tree branches. The list goes from top to bottom. The last word should not have language written down.
+    Put repeating elements next to one another, in the columns where they step from.
     """
     # [[language y], [word y]]
     columns = len(tree[0])
-    print(columns)
     col_spacing = SWIDTH / (columns + 1)
-    y_tot = starting_y
+    prevcols = None
+    y_tot = starting_y - (ARROWLENGTH + 2*ROWSPACING)
+    y_larrow = 0
     row = 0
     obj = []
     overlap = 2
     for row in tree:
-        x_col = 0
         y_vals = [[0], [0], [0]]
         heights = [[0], [0], [0]]
-        for col in row:
+        y_tot += ARROWLENGTH + 2*ROWSPACING
+        
+        elements = []
+        count = 1
+        prevel = None
+        for col in range(len(row)):
+            if row[col] == prevel:
+                count += 1
+                if col == len(row) - 1:
+                    elements.append({"Language": row[col]["Language"], "Word": row[col]["Word"], "Count": count})
+            else:
+                elements.append({"Language": row[col]["Language"], "Word": row[col]["Word"], "Count": count})
+                count = 1
+            
+            prevel = row[col]
+            
+        print("elements:", elements)
+        
+        if prevcols != None:
+            print("ran1")
+            y_hline = y_larrow
+            for el in elements:
+                el_count = el["Count"] + 1
+                print("number of repeats of el", el["Count"])
+                if el_count > 1:
+                    print("ran2")
+                    x_hline = elements.index(el)*col_spacing - LINEWIDTH / 2
+                    len_hline = col_spacing*(el_count - 1)
+                    hline = Box(x=x_hline, y=y_hline, width=len_hline, height=LINEWIDTH)
+                    obj.append(hline)
+        
+        columns = len(elements)
+        print("number of columns:", columns)
+        col_spacing = SWIDTH / (columns + 1)
+        
+        for el in elements:
             y_lang = y_word = y_tot
 
-            if col["Language"] != "":
-                lang = BoxText(col["Language"], font, center_x=x_col, y=y_lang)
+            if el["Language"] != "":
+                lang = BoxText(el["Language"], font, center_x=0, y=y_lang)
 
-                y_cline = y_lang + lang.get_height() - overlap
-                y_word = lang.get_height() + ROWSPACING
+                y_cline = y_lang + lang.box.rect.height - overlap
+                y_word = y_lang + lang.box.rect.height + ROWSPACING
 
                 y_vals[0].append(y_lang)
                 heights[0].append(lang.box.rect.height)
 
-            if col["Word"] != "":
-                word = BoxText(col["Word"], font, center_x=x_col, y=y_word)
+            if el["Word"] != "":
+                word = BoxText(el["Word"], font, center_x=0, y=y_word)
 
                 y_vals[1].append(y_word)
                 heights[1].append(word.box.rect.height)
+                
+                prevcols = 0
 
-            if col["Language"] != "" and col["Word"] != "":
-                len_cline = word.box.rect.centery - lang.box.rect.centery - lang.box.rect.height + overlap * 2
-                cline = Box(center_x=x_col, y=y_cline, width=LINEWIDTH, height=len_cline)
+            if el["Language"] != "" and el["Word"] != "":
+                len_cline = abs(word.box.rect.centery - lang.box.rect.centery - lang.box.rect.height + overlap * 2)
+                cline = Box(center_x=0, y=y_cline, width=LINEWIDTH, height=len_cline)
 
                 y_vals[2].append(y_cline)
                 heights[2].append(cline.rect.height)
+                
+        print("el of elements:", el, "\ny_lang:", y_lang, "y_word:", y_word, "y_cline:", y_cline, "\n")
 
         y_lang = max(y_vals[0])
-        y_word = max(y_vals[1])
+        y_word = max(y_vals[1] + y_vals[0])
         y_cline = max(y_vals[2])
-        y_tot += max(heights[0]) + max(heights[1]) + max(heights[2]) + 2 * ROWSPACING
-
-        for col in row:
+        y_tot += max(heights[0]) + max(heights[1]) + max(heights[2]) - 2*overlap
+        
+        print("row:", row, "\ny_lang:", y_lang, "y_word:", y_word, "y_cline:", y_cline, "\n")
+        
+        x_col = 0
+        for el in elements:
             x_col += col_spacing
-            if col["Language"] != "":
-                lang = BoxText(col["Language"], font, center_x=x_col, y=y_lang)
+            if el["Language"] != "":
+                lang = BoxText(el["Language"], font, center_x=x_col, y=y_lang)
                 obj.append(lang)
 
-            if col["Word"] != "":
-                word = BoxText(col["Word"], font, center_x=x_col, y=y_word)
+            if el["Word"] != "":
+                word = BoxText(el["Word"], font, center_x=x_col, y=y_word)
                 obj.append(word)
 
-            if col["Language"] != "" and col["Word"] != "":
+            if el["Language"] != "" and el["Word"] != "":
                 cline = Box(center_x=x_col, y=y_cline, width=LINEWIDTH, height=len_cline)
-                obj.append(cline)
-
+                obj.append(cline)        
+                
+                y_larrow = y_tot + ROWSPACING
+                larrow = Box(center_x=x_col, y=y_larrow, width=LINEWIDTH, height=ARROWLENGTH)
+                obj.append(larrow)
+                
+        prevcols = columns
+                    
     return obj
 
 
