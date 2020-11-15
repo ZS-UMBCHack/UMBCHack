@@ -1,4 +1,4 @@
-import pygame, graphics
+import pygame, graphics, math
 from graphics import Box, BoxText, Text
 
 NA = 0
@@ -18,6 +18,9 @@ yi = 20
 
 
 def main():
+    
+    word_of_interest = input("Input a word of interest: ")
+    
     pygame.init()
 
     screen = def_screen(SWIDTH, SHEIGHT)
@@ -31,7 +34,7 @@ def main():
     view_pos = 0, 0
 
     y = yi
-    y, words = create_word("'goodbye'", fontr, fontb, yi)
+    y, words = create_word(word_of_interest, fontr, fontb, yi)
     y += 2 * ROWSPACING
     y, branches = create_tree([[{"Language": "English", "Word": "'God be with you!'"},
                                 {"Language": "English", "Word": "'good'"},
@@ -109,6 +112,7 @@ def create_tree(tree, starting_y, font_text, font_title):
     row = 0
     obj = []
     overlap = 2
+    prev_els = []
 
     # create object "Origin Tree:"
     y_tot = starting_y
@@ -212,27 +216,45 @@ def create_tree(tree, starting_y, font_text, font_title):
 
         if prevcols != None:
             x_col = 0
+            prevel = 0
             for el in row:
                 x_col += col_spacing
-
-                row_i = tree.index(row)
-                el_i = row.index(el)
-                row_up = tree[row_i - 1]
-                el_up = row_up[el_i]
-
-                print("el:", el)
-                print("row:", row)
-                print("el_up:", el_up)
-                print("row_up:", row_up)
-
-                if el["Word"] != "" and el_up["Word"] != "":
-                    larrow = Box(center_x=x_col, y=y_larrow, width=LINEWIDTH, height=ARROWLENGTH)
-                    obj.append(larrow)
+                if prevel != el:
+                    row_i = tree.index(row)
+                    el_i = row.index(el)
+                    row_up = tree[row_i - 1]
+                    el_up = row_up[el_i]
+    
+                    print("el:", el)
+                    print("row:", row)
+                    print("el_up:", el_up)
+                    print("row_up:", row_up)
+                
+                    if el["Word"] != "" and el_up["Word"] != "":
+                        larrow = Box(center_x=x_col, y=y_larrow, width=LINEWIDTH, height=ARROWLENGTH)
+                        obj.append(larrow)
+                prevel = el
 
         prevcols = columns
 
     return y_tot, obj
 
+def drawTriangle(window, center, radius, width, color, rotation):
+        dx = dy = 0
+        
+        print("center:", center)
+
+        pointlist = []
+
+        for i in range(2):
+            
+            pointlist.append((radius+center[0]+dx, dy+center[1]))
+
+            # Rotate the corner by 60 degrees
+            dy += math.sin(math.pi / 3)
+            dx += math.cos(math.pi / 3)
+            
+        return pygame.draw.polygon(window, color, pointlist, width)
 
 def branch_space(branches):
     return SWIDTH / (branches + 1)
