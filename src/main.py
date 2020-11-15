@@ -26,15 +26,16 @@ def main():
     screen_draging = False
     obj = []
 
-    font = pygame.font.Font("assets/OpenDyslexic3-Regular.ttf", 20)
+    fontr = pygame.font.Font("assets/OpenDyslexic3-Regular.ttf", 20)
+    fontb = pygame.font.Font("assets/OpenDyslexic3-Bold.ttf", 20)
     view_pos = 0, 0
     
     
     y = yi
-    y, words = def_word("goodbye", font, yi)
+    y, words = def_word("'goodbye'", fontr, fontb, yi)
     y += 2*ROWSPACING
     y, branches = tree([[{"Language": "English", "Word": "'God be with you!'"}, {"Language": "English", "Word": "'good'"}, {"Language": "English", "Word": "'good morning'"}],
-                [{"Language": "", "Word": "'goodbye'"}, {"Language": "", "Word": "'goodbye'"}, {"Language": "", "Word": "'goodbye'"}]], y, font)
+                [{"Language": "", "Word": "'goodbye'"}, {"Language": "", "Word": "'goodbye'"}, {"Language": "", "Word": "'goodbye'"}]], y, fontr, fontb)
     
     
     while running:
@@ -71,21 +72,21 @@ def main():
 
         pygame.display.flip()
         
-def def_word(word, font, yi):
+def def_word(word, font_text, font_title, yi):
     words = []
     # create object "Word:"
-    word_txt = BoxText("Word:", font, center_x=cx, y=yi)
+    word_txt = BoxText("Word:", font_title, center_x=cx, y=yi)
     words.append(word_txt)
     # create object for the chosen word.
     y = yi + word_txt.box.rect.height + ROWSPACING*(3/4)
-    word = BoxText(word, font, center_x=cx, y=y)
+    word = BoxText(word, font_text, center_x=cx, y=y)
     words.append(word)
     
     yf = y + word.box.rect.height
     
     return yf, words
 
-def tree(tree, starting_y, font):
+def tree(tree, starting_y, font_text, font_title):
     """
     The tree should be of the form
     [[{"Language": "Latin", "Word": "'sonus'"}, {"Language": "", "Word": ""}],
@@ -107,7 +108,7 @@ def tree(tree, starting_y, font):
     
     # create object "Origin Tree:"
     y_tot = starting_y
-    origin_txt = BoxText("Origin Tree:", font, center_x=cx, y=y_tot)
+    origin_txt = BoxText("Origin Tree:", font_title, center_x=cx, y=y_tot)
     obj.append(origin_txt)
     
     y_tot += origin_txt.box.rect.height + ROWSPACING - (ARROWLENGTH + 2 * ROWSPACING)
@@ -160,7 +161,7 @@ def tree(tree, starting_y, font):
             y_lang = y_word = y_tot
 
             if el["Language"] != "":
-                lang = BoxText(el["Language"], font, center_x=0, y=y_lang)
+                lang = BoxText(el["Language"], font_text, center_x=0, y=y_lang)
 
                 y_cline = y_lang + lang.box.rect.height - overlap
                 y_word = y_lang + lang.box.rect.height + ROWSPACING
@@ -169,7 +170,7 @@ def tree(tree, starting_y, font):
                 heights[0].append(lang.box.rect.height)
 
             if el["Word"] != "":
-                word = BoxText(el["Word"], font, center_x=0, y=y_word)
+                word = BoxText(el["Word"], font_text, center_x=0, y=y_word)
 
                 y_vals[1].append(y_word)
                 heights[1].append(word.box.rect.height)
@@ -194,11 +195,11 @@ def tree(tree, starting_y, font):
         for el in elements:
             x_col += col_spacing
             if el["Language"] != "":
-                lang = BoxText(el["Language"], font, center_x=x_col, y=y_lang)
+                lang = BoxText(el["Language"], font_text, center_x=x_col, y=y_lang)
                 obj.append(lang)
 
             if el["Word"] != "":
-                word = BoxText(el["Word"], font, center_x=x_col, y=y_word)
+                word = BoxText(el["Word"], font_text, center_x=x_col, y=y_word)
                 obj.append(word)
 
             if el["Language"] != "" and el["Word"] != "":
