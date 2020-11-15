@@ -4,26 +4,30 @@ import re
 
 from wiktionaryparser import WiktionaryParser
 
-paren_quote_pattern = re.compile('\\("[^(]+"\\)')
 quote_pattern = re.compile('\\([^(]+\\)')
+delims = ' ;,.:\n'
 
 origin_phrases = [
+    'ultimately from',
     'from a variant of',
     'from earlier',
     'from',
     'abbreviation of',
     'borrowed from',
+    'alteration of',
 ]
-
 skip_phrases = [
     'variant of',
     'variants of',
     'equivalent to',
 ]
-
 stop_phrases = [
-    ''
+    '\n'
 ]
+
+segment_pattern = re.compile('|'.join(
+    [f'({phrase})' for phrase in origin_phrases + skip_phrases + stop_phrases]
+), re.IGNORECASE)
 
 
 def get_etymology_trees(word_str: str, language: str) -> List[Word]:
@@ -38,33 +42,22 @@ def get_etymology_trees(word_str: str, language: str) -> List[Word]:
 
 
 def parse(text: str):
-    subbed_text: str = text
-    quote_parens: List[str] = []
-    parens: List[str] = []
+    text = re.sub(quote_pattern, '', text)
+    segments = []
 
-    index = 0
-    match = re.search(paren_quote_pattern, subbed_text)
-    while match is not None:
-        subbed_text = re.sub(paren_quote_pattern, '$q' + str(index), subbed_text, count=1)
-        quote_parens.append(match.group())
-        index += 1
-        match = re.search(paren_quote_pattern, subbed_text)
+    start = None
+    for match in re.finditer(segment_pattern, text):
+        if start is not None:
+            segments.append(remove_trailing_delim(text[start:match.start()].strip()))
+        start = match.end()
 
-    index = 0
-    match = re.search(quote_pattern, subbed_text)
-    while match is not None:
-        subbed_text = re.sub(quote_pattern, '$p' + str(index), subbed_text, count=1)
-        parens.append(match.group())
-        index += 1
-        match = re.search(quote_pattern, subbed_text)
+    print(segments)
 
-    sentences = [i.strip() for i in subbed_text.split('.')]
-    statements = []
-    for sentence in sentences:
-        statements += sentence.split(';')
 
-    for statement in statements:
-        pass
+def remove_trailing_delim(text: str):
+    while text[-1] in delims:
+        text = text[0:-1]
+    return text
 
 
 class Word:
@@ -75,5 +68,4 @@ class Word:
 
 
 if __name__ == '__main__':
-    # get_etymology_trees("sound", "English")
-    WiktionaryParser().fetch("sound", "english")
+    get_etymology_trees("sound", "English")

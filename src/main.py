@@ -16,77 +16,73 @@ cy = SHEIGHT / 2
 
 yi = 20
 
+
 def main():
     pygame.init()
-    
+
     screen = def_screen(SWIDTH, SHEIGHT)
     screen.fill(graphics.black)
     clock = pygame.time.Clock()
     running = True
-    screen_draging = False
+    screen_dragging = False
     obj = []
 
     fontr = pygame.font.Font("assets/OpenDyslexic3-Regular.ttf", 20)
     fontb = pygame.font.Font("assets/OpenDyslexic3-Bold.ttf", 20)
     view_pos = 0, 0
-    
-    
+
     y = yi
-    y, words = def_word("'goodbye'", fontr, fontb, yi)
-    y += 2*ROWSPACING
-    y, branches = tree([[{"Language": "English", "Word": "'God be with you!'"}, {"Language": "English", "Word": "'good'"}, {"Language": "English", "Word": "'good morning'"}],
-                [{"Language": "", "Word": "'goodbye'"}, {"Language": "", "Word": "'goodbye'"}, {"Language": "", "Word": "'goodbye'"}]], y, fontr, fontb)
-    
-    
+    y, words = create_word("'goodbye'", fontr, fontb, yi)
+    y += 2 * ROWSPACING
+    y, branches = create_tree([[{"Language": "English", "Word": "'God be with you!'"},
+                                {"Language": "English", "Word": "'good'"},
+                                {"Language": "English", "Word": "'good morning'"}],
+                               [{"Language": "", "Word": "'goodbye'"}, {"Language": "", "Word": "'goodbye'"},
+                                {"Language": "", "Word": "'goodbye'"}]], y, fontr, fontb)
+
     while running:
         # main loop
         clock.tick(120)
-        
+
         obj += branches
         obj += words
 
         for el in obj:
             el.render(screen, view_pos)
-            
+
         # events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                    screen_draging = True
-                    for el in obj:
-                        mouse_x, mouse_y = event.pos
-                        offset_x = mouse_x
 
-            elif event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:            
-                    screen_draging = False
-    
-            elif event.type == pygame.MOUSEMOTION:
-                if screen_draging:
-                    mouse_x, mouse_y = event.pos
-                    for el in obj:
-                        view_pos = mouse_x + offset_x
-                        el.render(screen, view_pos)
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                screen_dragging = True
+
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                screen_dragging = False
+
+            elif event.type == pygame.MOUSEMOTION and screen_dragging:
+                view_pos = view_pos[0] + event.pos[0], view_pos[1] + event.pos[1]
 
         pygame.display.flip()
-        
-def def_word(word, font_text, font_title, yi):
+
+
+def create_word(word, font_text, font_title, yi):
     words = []
     # create object "Word:"
     word_txt = BoxText("Word:", font_title, center_x=cx, y=yi)
     words.append(word_txt)
     # create object for the chosen word.
-    y = yi + word_txt.box.rect.height + ROWSPACING*(3/4)
+    y = yi + word_txt.box.rect.height + ROWSPACING * (3 / 4)
     word = BoxText(word, font_text, center_x=cx, y=y)
     words.append(word)
-    
+
     yf = y + word.box.rect.height
-    
+
     return yf, words
 
-def tree(tree, starting_y, font_text, font_title):
+
+def create_tree(tree, starting_y, font_text, font_title):
     """
     The tree should be of the form
     [[{"Language": "Latin", "Word": "'sonus'"}, {"Language": "", "Word": ""}],
@@ -105,20 +101,20 @@ def tree(tree, starting_y, font_text, font_title):
     row = 0
     obj = []
     overlap = 2
-    
+
     # create object "Origin Tree:"
     y_tot = starting_y
     origin_txt = BoxText("Origin Tree:", font_title, center_x=cx, y=y_tot)
     obj.append(origin_txt)
-    
+
     y_tot += origin_txt.box.rect.height + ROWSPACING - (ARROWLENGTH + 2 * ROWSPACING)
-    
+
     for row in tree:
         y_vals = [[0], [0], [0]]
         heights = [[0], [0], [0]]
-        
+
         y_larrow = y_tot + ROWSPACING
-        
+
         y_tot += ARROWLENGTH + 2 * ROWSPACING
 
         elements = []
@@ -205,35 +201,38 @@ def tree(tree, starting_y, font_text, font_title):
             if el["Language"] != "" and el["Word"] != "":
                 cline = Box(center_x=x_col, y=y_cline, width=LINEWIDTH, height=len_cline)
                 obj.append(cline)
-            
+
         if prevcols != None:
             x_col = 0
             for el in row:
                 x_col += col_spacing
-                
+
                 row_i = tree.index(row)
                 el_i = row.index(el)
                 row_up = tree[row_i - 1]
                 el_up = row_up[el_i]
-                
+
                 print("el:", el)
                 print("row:", row)
                 print("el_up:", el_up)
                 print("row_up:", row_up)
-                
+
                 if el["Word"] != "" and el_up["Word"] != "":
                     larrow = Box(center_x=x_col, y=y_larrow, width=LINEWIDTH, height=ARROWLENGTH)
                     obj.append(larrow)
 
         prevcols = columns
-    
+
     return y_tot, obj
+
 
 def branch_space(branches):
     return SWIDTH / (branches + 1)
 
+
 def def_screen(width, height):
     return pygame.display.set_mode((width, height))
+
 
 if __name__ == '__main__':
     main()
