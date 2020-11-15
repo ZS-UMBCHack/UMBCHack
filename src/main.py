@@ -115,9 +115,9 @@ def create_tree_file(file, word):
     tree = ""
     for line in file:
         if search:
-            if " " in line:
+            if "/" in line:
                 for char in line:
-                    if char != " " and char != "/":
+                    if char != "/":
                         tree += char
             else:
                 break
