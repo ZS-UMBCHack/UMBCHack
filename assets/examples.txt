@@ -1,8 +1,8 @@
 "goodbye"-[[{"Language":"English","Word":"'God be with you!'"},{"Language":"English","Word":"'good'"},
-            {"Language":"English","Word":"'good morning'"}],
-           [{"Language":"","Word":"'goodbye'"},{"Language":"","Word":"'goodbye'"},
-            {"Language":"","Word":"'goodbye'"}]]
-
+/            {"Language":"English","Word":"'good morning'"}],
+/           [{"Language":"","Word":"'goodbye'"},{"Language":"","Word":"'goodbye'"},
+/            {"Language":"","Word":"'goodbye'"}]]
+/
 "hello"-[[{"Language":"English","Word":"'hollo'"},{"Language":"English","Word":"'holla'"}],
-           [{"Language":"","Word":"'hello'"},{"Language":"","Word":"'hello'"}]]
+/           [{"Language":"","Word":"'hello'"},{"Language":"","Word":"'hello'"}]]
 "see"

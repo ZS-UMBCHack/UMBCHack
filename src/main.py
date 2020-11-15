@@ -21,10 +21,9 @@ def main():
     with open('assets/examples.txt') as f:
         example_data = f.readlines()
     examples = create_file_list(example_data)
-    print("Word options are:")
+    print("Possible word options:")
     print_list(examples)
     word_of_interest = '"' + input("Input a word of interest: ") + '"'
-    print("word of interest:", word_of_interest)
     
     tree = create_tree_file(example_data, word_of_interest)
     tree = ast.literal_eval(tree)
@@ -98,7 +97,7 @@ def create_file_list(file):
     for line in file:
         word = ""
         for char in line:
-            if char == " ":
+            if char == "/":
                 break
             elif char != "-" and (char != '"'):
                 word += char
@@ -118,7 +117,7 @@ def create_tree_file(file, word):
         if search:
             if " " in line:
                 for char in line:
-                    if char != " ":
+                    if char != " " and char != "/":
                         tree += char
             else:
                 break
