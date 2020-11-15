@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 import pygame
 
 black = (0, 0, 0)
 white = (255, 255, 255)
+
 
 class Box:
     def __init__(self, color=white, pass_args=None, **kwargs):
@@ -54,7 +54,8 @@ class Text:
 
     def render(self, screen: pygame.Surface, view_pos):
         screen.blit(self._surface, self.rect.topleft + view_pos)
-        
+
+
 def create_rect(pass_args):
     rect = pygame.Rect(0, 0, 0, 0)
     if 'x' in pass_args.keys():
@@ -70,6 +71,7 @@ def create_rect(pass_args):
     if 'center_y' in pass_args.keys():
         rect.y = pass_args['center_y'] - rect.height / 2
     return rect
+
 
 def round_rect(surface, rect, color, radius=0.4):
     """
