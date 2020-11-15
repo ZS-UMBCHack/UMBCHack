@@ -185,7 +185,7 @@ def create_tree(tree, starting_y, font_text, font_title):
         count = 1
         prev_el = None
         for col in range(len(row)):
-            if prev_el is not None and row[col]['Word'] == prev_el['Word']:
+            if prev_el is not None and row[col]['Word'] == prev_el['Word'] and row[col]['Language'] == prev_el['Language'] and not (row[col]['Word'] == "" and row[col]['Word'] == ""):
                 count += 1
                 if col == len(row) - 1:
                     elements.append({"Language": row[col]["Language"], "Word": row[col]["Word"], "Count": count})
@@ -197,6 +197,8 @@ def create_tree(tree, starting_y, font_text, font_title):
                 count = 1
 
             prev_el = row[col]
+        
+        print("elements:", elements)
 
         if prevcols is not None:
             y_hline = y_larrow
@@ -255,6 +257,7 @@ def create_tree(tree, starting_y, font_text, font_title):
             if el["Language"] != "" and el["Word"] != "":
                 cline = Box(center_x=x_col, y=y_cline, width=LINEWIDTH, height=len_cline)
                 obj.append(cline)
+            
 
         if prevcols != None:
             x_col = 0
@@ -267,7 +270,7 @@ def create_tree(tree, starting_y, font_text, font_title):
                     row_up = tree[row_i - 1]
                     el_up = row_up[el_i]
                 
-                    if el["Word"] != "" and el_up["Word"] != "":
+                    if (el["Word"] != "" or el["Language"] != "") and (el_up["Word"] != "" or el_up["Language"] != ""):
                         larrow = Box(center_x=x_col, y=y_larrow, width=LINEWIDTH, height=ARROWLENGTH)
                         obj.append(larrow)
                 prevel = el
