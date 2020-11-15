@@ -3,5 +3,6 @@
            [{"Language":"","Word":"'goodbye'"},{"Language":"","Word":"'goodbye'"},
             {"Language":"","Word":"'goodbye'"}]]
 
-"hello"-
+"hello"-[[{"Language":"English","Word":"'hollo'"},{"Language":"English","Word":"'holla'"}],
+           [{"Language":"","Word":"'hello'"},{"Language":"","Word":"'hello'"}]]
 "see"

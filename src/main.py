@@ -1,4 +1,4 @@
-import pygame, graphics, math
+import pygame, graphics, math, ast
 from graphics import Box, BoxText, Text
 
 NA = 0
@@ -26,15 +26,15 @@ def main():
     word_of_interest = '"' + input("Input a word of interest: ") + '"'
     print("word of interest:", word_of_interest)
     
-    # tree = create_tree_file(example_data, word_of_interest)
+    tree = create_tree_file(example_data, word_of_interest)
+    tree = ast.literal_eval(tree)
+        
+    """
     tree = [[{"Language":"English","Word":"'God be with you!'"},{"Language":"English","Word":"'good'"},
             {"Language":"English","Word":"'good morning'"}],
            [{"Language":"","Word":"'goodbye'"},{"Language":"","Word":"'goodbye'"},
             {"Language":"","Word":"'goodbye'"}]]
-    
-    print("example data:", example_data)
-    
-    print("tree:", tree)
+    """
     
     pygame.init()
 
@@ -94,21 +94,20 @@ def print_list(array):
 
 def create_file_list(file):
     array = []
-    append = True
+    append = False
     for line in file:
         word = ""
         for char in line:
             if char == " ":
-                append = False
                 break
             elif char != "-" and (char != '"'):
                 word += char
+                append = True
             elif char == "-":
                 break
         if append:
             array.append(word)
-        else:
-            append = True
+            append = False
     return array
 
 def create_tree_file(file, word):
@@ -136,10 +135,10 @@ def create_tree_file(file, word):
 def create_word(word, font_text, font_title, yi):
     words = []
     # create object "Word:"
-    word_txt = BoxText("Word:", font_title, center_x=cx, y=yi)
+    word_txt = Text("Word:", font_title, center_x=cx, y=yi)
     words.append(word_txt)
     # create object for the chosen word.
-    y = yi + word_txt.box.rect.height + ROWSPACING * (3 / 4)
+    y = yi + word_txt.rect.height + ROWSPACING * (3 / 4)
     word = BoxText(word, font_text, center_x=cx, y=y)
     words.append(word)
 
@@ -170,13 +169,12 @@ def create_tree(tree, starting_y, font_text, font_title):
 
     # create object "Origin Tree:"
     y_tot = starting_y
-    origin_txt = BoxText("Origin Tree:", font_title, center_x=cx, y=y_tot)
+    origin_txt = Text("Origin Tree:", font_title, center_x=cx, y=y_tot)
     obj.append(origin_txt)
 
-    y_tot += origin_txt.box.rect.height + ROWSPACING - (ARROWLENGTH + 2 * ROWSPACING)
+    y_tot += origin_txt.rect.height + ROWSPACING - (ARROWLENGTH + 2 * ROWSPACING)
 
     for row in tree:
-        print("tree in create tree:", tree)
         y_vals = [[0], [0], [0]]
         heights = [[0], [0], [0]]
 
@@ -205,7 +203,6 @@ def create_tree(tree, starting_y, font_text, font_title):
             y_hline = y_larrow
             for el in elements:
                 el_count = el["Count"]
-                print("number of repeats of el", el["Count"])
                 if el_count > 1:
                     x_hline = (elements.index(el) + 1) * col_spacing - LINEWIDTH / 2
                     len_hline = col_spacing * (el_count - 1)
@@ -270,10 +267,6 @@ def create_tree(tree, starting_y, font_text, font_title):
                     el_i = row.index(el)
                     row_up = tree[row_i - 1]
                     el_up = row_up[el_i]
-                    
-                    print("row:", row)
-                    print("el:", el)
-                    print("el up:", el_up)
                 
                     if el["Word"] != "" and el_up["Word"] != "":
                         larrow = Box(center_x=x_col, y=y_larrow, width=LINEWIDTH, height=ARROWLENGTH)
