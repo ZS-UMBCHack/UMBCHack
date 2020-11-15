@@ -1,9 +1,9 @@
-"goodbye"-[[{"Language":"English","Word":"'God be with you!'"},{"Language":"English","Word":"'good'"},
-/{"Language":"English","Word":"'good morning'"}],
-/[{"Language":"","Word":"'goodbye'"},{"Language":"","Word":"'goodbye'"},
-/{"Language":"","Word":"'goodbye'"}]]
-"hello"-[[{"Language":"English","Word":"'hollo'"},{"Language":"English","Word":"'holla'"}],
-/[{"Language":"","Word":"'hello'"},{"Language":"","Word":"'hello'"}]]
-"see"-[[{"Language":"Germanic","Word":""},{"Language":"","Word":""},{"Language":"","Word":""}],
-/[{"Language":"Old English","Word":"'seon'"},{"Language":"Dutch","Word":"'zen'"},{"Language":"German","Word":"'sehen'"}],
-/[{"Language":"","Word":"'see'"},{"Language":"","Word":"'see'"},{"Language":"","Word":"'see'"}]]
+'goodbye'-[[{'Language':'English','Word':'"God be with you!"'},{'Language':'English','Word':'"good"'},
+/{'Language':'English','Word':'"good morning"'}],
+/[{'Language':'','Word':'"goodbye"'},{'Language':'','Word':'"goodbye"'},
+/{'Language':'','Word':'"goodbye"'}]]
+'hello'-[[{'Language':'English','Word':'"hollo"'},{'Language':'English','Word':'"holla"'}],
+/[{'Language':'','Word':'"hello"'},{'Language':'','Word':'"hello"'}]]
+'see'-[[{'Language':'Germanic','Word':''},{'Language':'','Word':''},{'Language':'','Word':''}],
+/[{'Language':'Old English','Word':'"seon"'},{'Language':'Dutch','Word':'"zen"'},{'Language':'German','Word':'"sehen"'}],
+/[{'Language':'','Word':'"see"'},{'Language':'','Word':'"see"'},{'Language':'','Word':'"see"'}]]

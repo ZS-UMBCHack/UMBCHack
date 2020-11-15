@@ -23,7 +23,7 @@ def main():
     examples = create_file_list(example_data)
     print("Possible word options:")
     print_list(examples)
-    word_of_interest = '"' + input("Input a word of interest: ") + '"'
+    word_of_interest = "'" + input("Input a word of interest: ") + "'"
     
     tree = create_tree_file(example_data, word_of_interest)
     tree = ast.literal_eval(tree)
