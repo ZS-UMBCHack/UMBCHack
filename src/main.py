@@ -18,8 +18,23 @@ yi = 20
 
 
 def main():
+    with open('assets/examples.txt') as f:
+        example_data = f.readlines()
+    examples = create_file_list(example_data)
+    print("Word options are:")
+    print_list(examples)
+    word_of_interest = '"' + input("Input a word of interest: ") + '"'
+    print("word of interest:", word_of_interest)
     
-    word_of_interest = input("Input a word of interest: ")
+    # tree = create_tree_file(example_data, word_of_interest)
+    tree = [[{"Language":"English","Word":"'God be with you!'"},{"Language":"English","Word":"'good'"},
+            {"Language":"English","Word":"'good morning'"}],
+           [{"Language":"","Word":"'goodbye'"},{"Language":"","Word":"'goodbye'"},
+            {"Language":"","Word":"'goodbye'"}]]
+    
+    print("example data:", example_data)
+    
+    print("tree:", tree)
     
     pygame.init()
 
@@ -36,11 +51,7 @@ def main():
     y = yi
     y, words = create_word(word_of_interest, fontr, fontb, yi)
     y += 2 * ROWSPACING
-    y, branches = create_tree([[{"Language": "English", "Word": "'God be with you!'"},
-                                {"Language": "English", "Word": "'good'"},
-                                {"Language": "English", "Word": "'good morning'"}],
-                               [{"Language": "", "Word": "'goodbye'"}, {"Language": "", "Word": "'goodbye'"},
-                                {"Language": "", "Word": "'goodbye'"}]], y, fontr, fontb)
+    y, branches = create_tree(tree, y, fontr, fontb)
     
     obj += branches
     obj += words
@@ -76,7 +87,51 @@ def main():
                 prev_mouse_pos = event.pos
 
         pygame.display.flip()
+        
+def print_list(array):
+    for el in array:
+        print(el)
 
+def create_file_list(file):
+    array = []
+    append = True
+    for line in file:
+        word = ""
+        for char in line:
+            if char == " ":
+                append = False
+                break
+            elif char != "-" and (char != '"'):
+                word += char
+            elif char == "-":
+                break
+        if append:
+            array.append(word)
+        else:
+            append = True
+    return array
+
+def create_tree_file(file, word):
+    add_char = False
+    search = False
+    tree = ""
+    for line in file:
+        if search:
+            if " " in line:
+                for char in line:
+                    if char != " ":
+                        tree += char
+            else:
+                break
+        elif word in line:
+            search = True
+            for char in line:
+                if add_char == True:
+                    tree += char
+                elif char == "-":
+                    add_char = True
+    return tree
+            
 
 def create_word(word, font_text, font_title, yi):
     words = []
@@ -112,7 +167,6 @@ def create_tree(tree, starting_y, font_text, font_title):
     row = 0
     obj = []
     overlap = 2
-    prev_els = []
 
     # create object "Origin Tree:"
     y_tot = starting_y
@@ -122,6 +176,7 @@ def create_tree(tree, starting_y, font_text, font_title):
     y_tot += origin_txt.box.rect.height + ROWSPACING - (ARROWLENGTH + 2 * ROWSPACING)
 
     for row in tree:
+        print("tree in create tree:", tree)
         y_vals = [[0], [0], [0]]
         heights = [[0], [0], [0]]
 
@@ -146,23 +201,18 @@ def create_tree(tree, starting_y, font_text, font_title):
 
             prev_el = row[col]
 
-        print("elements:", elements)
-
         if prevcols is not None:
-            print("ran1")
             y_hline = y_larrow
             for el in elements:
                 el_count = el["Count"]
                 print("number of repeats of el", el["Count"])
                 if el_count > 1:
-                    print("ran2")
                     x_hline = (elements.index(el) + 1) * col_spacing - LINEWIDTH / 2
                     len_hline = col_spacing * (el_count - 1)
                     hline = Box(x=x_hline, y=y_hline, width=len_hline, height=LINEWIDTH)
                     obj.append(hline)
 
         columns = len(elements)
-        print("number of columns:", columns)
         col_spacing = SWIDTH / (columns + 1)
 
         for el in elements:
@@ -190,14 +240,10 @@ def create_tree(tree, starting_y, font_text, font_title):
                 y_vals[2].append(y_cline)
                 heights[2].append(cline.rect.height)
 
-        print("el of elements:", el, "\ny_lang:", y_lang, "y_word:", y_word, "y_cline:", y_cline, "\n")
-
         y_lang = max(y_vals[0])
         y_word = max(y_vals[1] + y_vals[0])
         y_cline = max(y_vals[2])
         y_tot += max(heights[0]) + max(heights[1]) + max(heights[2]) - 2 * overlap
-
-        print("row:", row, "\ny_lang:", y_lang, "y_word:", y_word, "y_cline:", y_cline, "\n")
 
         x_col = 0
         for el in elements:
@@ -224,11 +270,10 @@ def create_tree(tree, starting_y, font_text, font_title):
                     el_i = row.index(el)
                     row_up = tree[row_i - 1]
                     el_up = row_up[el_i]
-    
-                    print("el:", el)
+                    
                     print("row:", row)
-                    print("el_up:", el_up)
-                    print("row_up:", row_up)
+                    print("el:", el)
+                    print("el up:", el_up)
                 
                     if el["Word"] != "" and el_up["Word"] != "":
                         larrow = Box(center_x=x_col, y=y_larrow, width=LINEWIDTH, height=ARROWLENGTH)
@@ -241,8 +286,6 @@ def create_tree(tree, starting_y, font_text, font_title):
 
 def drawTriangle(window, center, radius, width, color, rotation):
         dx = dy = 0
-        
-        print("center:", center)
 
         pointlist = []
 

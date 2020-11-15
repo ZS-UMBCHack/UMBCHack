@@ -1,0 +1,7 @@
+"goodbye"-[[{"Language":"English","Word":"'God be with you!'"},{"Language":"English","Word":"'good'"},
+            {"Language":"English","Word":"'good morning'"}],
+           [{"Language":"","Word":"'goodbye'"},{"Language":"","Word":"'goodbye'"},
+            {"Language":"","Word":"'goodbye'"}]]
+
+"hello"-
+"see"
