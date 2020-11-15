@@ -21,7 +21,6 @@ def main():
     pygame.init()
 
     screen = def_screen(SWIDTH, SHEIGHT)
-    screen.fill(graphics.black)
     clock = pygame.time.Clock()
     running = True
     screen_dragging = False
@@ -43,6 +42,7 @@ def main():
     while running:
         # main loop
         clock.tick(120)
+        screen.fill(graphics.black)
 
         obj += branches
         obj += words
