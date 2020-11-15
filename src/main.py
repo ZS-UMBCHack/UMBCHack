@@ -42,6 +42,11 @@ def main():
     obj += branches
     obj += words
 
+    obj += branches
+    obj += words
+
+    prev_mouse_pos = 0, 0
+
     while running:
         # main loop
         clock.tick(120)
@@ -57,12 +62,15 @@ def main():
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 screen_dragging = True
+                prev_mouse_pos = event.pos
 
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 screen_dragging = False
 
             elif event.type == pygame.MOUSEMOTION and screen_dragging:
-                view_pos = view_pos[0] + event.pos[0], view_pos[1] + event.pos[1]
+                view_pos = view_pos[0] + prev_mouse_pos[0] - event.pos[0], \
+                           view_pos[1] + prev_mouse_pos[1] - event.pos[1]
+                prev_mouse_pos = event.pos
 
         pygame.display.flip()
 
